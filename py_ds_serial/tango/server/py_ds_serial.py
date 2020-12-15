@@ -21,39 +21,87 @@ class Py_ds_serial(Device):
 
     green_mode = GreenMode.Asyncio
 
-    url = device_property(dtype=str)
+    # The path and name of the serial line device to be used.
+    serialline = device_property(dtype=str, default_value='/dev/ttyR1')
+
+    # The communication speed in baud used with the serial line protocol.
+    baudrate = device_property(dtype=int, default_value=9600)
+
+    # The character length used with the serial line protocol. The possibilities are 8, 7, 6 or 5 bits per character.
+    charlength = device_property(dtype=int, default_value=8)
+
+    # End of message Character used in particular by the DevSerReadLine command Default = 13
+    newline = device_property(dtype=int, default_value=13)
+
+    # The parity used with the serial line protocol. The possibilities are none = empty, even or odd.
+    # TODO: Assert the possibilities.
+    parity = device_property(dtype=str, default_value='none')
+
+
+
+    # The timout value im ms for for answers of requests send to the serial line.
+    # This value should be lower than the Tango client server timout value.
+    timeout = device_property(dtype=int, default_value=100)
+
+    # The number of stop bits used with the serial line protocol. The possibilities are 1 or 2 stop bits.
+    # TODO: Assert the possibilities.
+    stopbits = device_property(dtype=int, default_value=1)
+
+
 
     async def init_device(self):
         await super().init_device()
-        self.connection = connection_for_url(self.url, concurrency="async")
+        self.connection = None
         self.py_ds_serial = py_ds_serial.core.Py_ds_serial(self.connection)
 
-    @attribute(dtype=str, label="ID")
-    def idn(self):
-        return self.py_ds_serial.get_idn()
-
-    @attribute(dtype=float, unit="bar", label="Pressure")
-    async def pressure(self):
-        # example processing the result
-        pressure = await self.py_ds_serial.get_pressure()
-        return pressure / 1000
-
-    @attribute(dtype=float, unit="bar", label="Pressure set point")
-    async def pressure_setpoint(self):
-        # example processing the result
-        setpoint = await self.py_ds_serial.get_pressure_setpoint()
-        return setpoint / 1000
-
-    @pressure_setpoint.setter
-    def pressure_setpoint(self, value):
-        # example returning the coroutine back to tango
-        return self.py_ds_serial.get_pressure_setpoint(value * 1000)
 
     @command
-    def turn_on(self):
-        # example returning the coroutine back to who calling function
-        return self.py_ds_serial.turn_on()
+    def DevSerWriteString(self, string: str) -> int:
+        """
+        Write a string of characters to a serial line and return the number of characters written.
+        """
+        # TODO
+        pass
 
+    @command
+    def DevSerFlush(self, what: int) -> None:
+        """
+        Flush serial line port according to argin passed. 0=input 1=output 2=both.
+        """
+        # TODO
+        pass
+
+    @command
+    def DevSerReadChar(self, type: int) -> bytes:
+        """
+        Read an array of characters, the type of read is specified in the input parameter, it can be SL_RAW SL_NCHAR SL_LINE.
+        """
+        # TODO
+        pass
+
+    @command
+    def DevSerReadRaw(self) -> bytes:
+        """
+        Read a string from the serialline device in mode raw (no end of string expected, just empty the entire serialline receiving buffer).
+        """
+        # TODO
+        pass
+
+    @command
+    def DevSerWriteChar(self, bytes) -> int:
+        """
+        Write N characters to a seria line and return the number of characters written.
+        """
+        # TODO
+        pass
+
+    @command
+    def Init(self) -> None:
+        """
+        Reloads the value of the properties and restarts the connection to keep it working.
+        """
+        # TODO
+        pass
 
 if __name__ == "__main__":
     import logging
