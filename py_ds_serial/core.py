@@ -4,7 +4,6 @@
 #
 # Copyright (c) 2020 Alberto López Sánchez
 # Distributed under the GNU General Public License v3. See LICENSE for more info.
-
 """
 Core Py_ds_serial module.
 
@@ -23,33 +22,69 @@ It can receive an asynchronous connection object. Example::
     asyncio.run(main())
 """
 
+import serial
 
 class Py_ds_serial:
     """The central Py_ds_serial"""
 
-    def __init__(self, conn):
-        self._conn = conn
+    def __init__(self, serialline :str, baudrate :int, charlength :int, newline :int,
+     parity: str, timeout: int, stopbits: int):
+        """
+        Class constructor.
 
-    # The following code is simply an example. Replace with your own code
+        Parameters
+        ----------
+        serialline : str
+            The path and name of the serial line device to be used.
+        baudrate : int
+            The communication speed in baud used with the serial line protocol.
+        charlength : int
+            The character length used with the serial line protocol.
+            The possibilities are 8, 7, 6 or 5 bits per character.
+        newline : int
+            End of message Character used in particular by the DevSerReadLine command Default = 13
+        parity : str
+            The parity used with the serial line protocol. The possibilities are none = empty, even or odd.
+        timeout : float
+            The timout value in seconds for for answers of requests send to the serial line.
+        stopbits : int
+            The number of stop bits used with the serial line protocol. The possibilities are 1 or 2 stop bits.
 
-    def get_idn(self):
-        # example returning the coroutine back to who calling function
-        return self._conn.write_readline(b"*IDN?\n")
+        """
+        self._serialline = serialline
+        self._baudrate = baudrate
+        self._timeout = timeout / 1000.0 # Convert ms to s.
+        self._newline = newline
 
-    async def get_pressure(self):
-        # example processing the result
-        data = await self._conn.write_readline(b"SENS1:PRES?\n")
-        return float(data)
+        assert charlength in [5,6,8,8]
+        if charlength == 5:
+            self._charlength = serial.FIVEBITS
+        elif charlength == 6:
+            self._charlength = serial.SIXBITS
+        elif charlength == 7:
+            self._charlength = serial.SEVENBITS
+        elif charlength == 8:
+            self._charlength = serial.EIGHTBITS
 
-    async def get_pressure_setpoint(self):
-        # example processing the result
-        data = await self._conn.write_readline(b"PRES1:SP?\n")
-        return float(data)
+        assert parity in ['none', 'empty', 'even', 'odd']
+        if parity == 'none' or parity == 'empty':
+            self._parity = serial.PARITY_NONE
+        elif parity == 'even':
+            self._parity = serial.PARITY_EVEN
+        elif parity == 'odd':
+            self_parity = serial.PARITY_ODD
 
-    def set_pressure_setpoint(self, value):
-        # example returning the coroutine back to the calling function
-        return self._conn.write(f"PRES1:SP {value}\n".encode())
 
-    def turn_on(self):
-        # example returning the coroutine back to who calling function
-        return self._conn.write(b"SENS1:PRES 1\n")
+        assert stopbits in [1,2]
+        if stopbits == 1:
+            self._stopbits = serial.STOPBITS_ONE
+        elif stopbits == 2:
+            self._stopbits = serial.STOPBITS_TWO
+
+    def connect(self):
+        self._sl = serial.serial_for_url(self._serialline, timeout=self._timeout,
+            baudrate=self._baudrate, bytesize=self._charlength,
+            parity=self._parity, stopbits=self._stopbits)
+
+
+
