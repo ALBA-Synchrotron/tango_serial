@@ -23,6 +23,7 @@ It can receive an asynchronous connection object. Example::
 """
 
 import serial
+import io
 
 class Py_ds_serial:
     """The central Py_ds_serial"""
@@ -81,10 +82,38 @@ class Py_ds_serial:
         elif stopbits == 2:
             self._stopbits = serial.STOPBITS_TWO
 
+
     def connect(self):
         self._sl = serial.serial_for_url(self._serialline, timeout=self._timeout,
             baudrate=self._baudrate, bytesize=self._charlength,
             parity=self._parity, stopbits=self._stopbits)
 
+        self._sio = io.TextIOWrapper(io.BufferedReader(self._sl), newline=self._newline)
 
+    def write_string(self, string: bytes) -> int:
+        """
+        Write a string of characters to a serial line and return the number of characters written.
+        """
+        return self._sl.write(string)
+
+    def flush(self) -> None:
+        """
+        Wait until all data is written.
+        """
+        self._sl.flush()
+
+    def reset_input_buffer(self) -> None:
+        """
+        Flush input buffer, discarding all its contents.
+        """
+        self._sl.reset_input_buffer()
+
+    def readline(self) -> bytes:
+        self._sio.readline()
+
+    def readall(self) -> bytes:
+        return self._sl.read_all()
+
+    def read_until(self, size :int) -> bytes:
+        return self._sl.read_until(self._sl._newline, size)
 
