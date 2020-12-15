@@ -48,7 +48,6 @@ class Py_ds_serial(Device):
     stopbits = device_property(dtype=int, default_value=1)
 
 
-
     async def init_device(self):
         await super().init_device()
         self.connection = None
@@ -61,46 +60,64 @@ class Py_ds_serial(Device):
         Write a string of characters to a serial line and return the number of characters written.
         """
         # TODO
-        pass
+        return self.py_ds_serial.write_string(string)
 
     @command
     def DevSerFlush(self, what: int) -> None:
         """
         Flush serial line port according to argin passed. 0=input 1=output 2=both.
         """
-        # TODO
-        pass
+        # TODO: Comprobar que el comportamiento es el esperado. flush input discards. flush output waits to write
+        assert what in [0, 1, 2]
+        if what == 0:
+            self.py_ds_serial.flush()
+        elif what == 1:
+            self.py_ds_serial.reset_input_buffer()
+        elif what == 2:
+            self.py_ds_serial.flush()
+            self.py_ds_serial.reset_input_buffer()
+
 
     @command
-    def DevSerReadChar(self, type: int) -> bytes:
+    def DevSerReadChar(self, argin: int) -> bytes:
         """
         Read an array of characters, the type of read is specified in the input parameter, it can be SL_RAW SL_NCHAR SL_LINE.
         """
-        # TODO
-        pass
+        # TODO: Check
+        # SL_RAW = 0, SL_NCHAR=1, SL_LINE=2
+        read_type = argin & 0x000f
+
+        assert read_type in [0, 1, 2]
+        if read_type == 0:
+            return self.py_ds_serial.readall()
+        if read_type == 1:
+            nchar = argin >> 8
+            return self.py_ds_serial.read_until(nchar)
+        if read_type == 2:
+            return self.py_ds_serial.readline()
 
     @command
     def DevSerReadRaw(self) -> bytes:
         """
         Read a string from the serialline device in mode raw (no end of string expected, just empty the entire serialline receiving buffer).
         """
-        # TODO
-        pass
+        # TODO: Check
+        return self.py_ds_serial.readall()
 
     @command
     def DevSerWriteChar(self, bytes) -> int:
         """
         Write N characters to a seria line and return the number of characters written.
         """
-        # TODO
-        pass
+        # TODO: Check
+        return self.py_ds_serial.write_string(bytes)
 
     @command
     def Init(self) -> None:
         """
         Reloads the value of the properties and restarts the connection to keep it working.
         """
-        # TODO
+        # TODO: Check
         pass
 
 if __name__ == "__main__":
