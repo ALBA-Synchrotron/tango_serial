@@ -18,34 +18,47 @@ class Py_ds_serial(Device):
 
     green_mode = GreenMode.Asyncio
 
-    # The path and name of the serial line device to be used.
-    serialline = device_property(dtype=str, doc='')
+    serialline = device_property(
 
-    # The communication speed in baud used with the serial line protocol.
-    baudrate = device_property(dtype=int, default_value=9600)
+        dtype=str,
 
-    # The character length used with the serial line protocol.
-    # The possibilities are 8, 7, 6 or 5 bits per character.
-    charlength = device_property(dtype=int, default_value=8)
+        doc="Device name, number or URL. "
+        "Examples: '/dev/ttyACM0', 'COM1',"
+        "rfc2217://<host>:<port>[?<option>[&<option>...]]."
+        "For more information about the supported URLs visit:"
+        "https://pyserial.readthedocs.io/en/latest/url_handlers.html#urls")
 
-    # End of message Character used in particular by the DevSerReadLine
-    # command Default = 13
-    newline = device_property(dtype=int, default_value=13)
+    baudrate = device_property(
+        dtype=int, default_value=9600,
+        doc="The speed in baud used with the serial line protocol."
+        "Examples: 9600, 115200")
 
-    # The parity used with the serial line protocol. The possibilities
-    # are none = empty, even or odd.
-    # TODO: Assert the possibilities.
-    parity = device_property(dtype=str, default_value='none')
+    charlength = device_property(
+        dtype=int, default_value=8,
+        doc="The character"
+        "length used with the serial line protocol."
+        "The possibilities are 8, 7, 6 or 5 bits per character.")
 
-    # The timout value im ms for for answers of requests send to the serial
-    # line. This value should be lower than the Tango client server timout
-    # value.
-    timeout = device_property(dtype=int, default_value=100)
+    newline = device_property(
+        dtype=int, default_value=13,
+        doc="End of message Character used in particular by the "
+        "DevSerReadLine command. Default = 13")
 
-    # The number of stop bits used with the serial line protocol. The
-    # possibilities are 1 or 2 stop bits.
-    # TODO: Assert the possibilities.
-    stopbits = device_property(dtype=int, default_value=1, doc='asjjssj')
+    parity = device_property(
+        dtype=str, default_value='none',
+        doc="The parity used with the serial line protocol. The possibilities "
+        "are none = empty, even or odd.")
+
+    timeout = device_property(
+        dtype=int, default_value=100,
+        doc="The timout value im ms for for answers of requests send to the "
+        "serial line. This value should be lower than the Tango client server "
+        "timout value.")
+
+    stopbits = device_property(
+        dtype=int, default_value=1,
+        doc="The number of stop bits used with the serial line protocol."
+        " The possibilities are 1 or 2 stop bits.")
 
     # TODO: Init
     async def init_device(self):
@@ -103,20 +116,11 @@ class Py_ds_serial(Device):
     @command
     def DevSerWriteChar(self, bytes) -> int:
         """
-        Write N characters to a seria line and return the number of characters
+        Write N characters to a serial line and return the number of characters
         written.
         """
         # TODO: Check
         return self.py_ds_serial.write_string(bytes)
-
-    @command
-    def Init(self) -> None:
-        """
-        Reloads the value of the properties and restarts the connection to keep
-        it working.
-        """
-        # TODO: Check
-        pass
 
 
 if __name__ == "__main__":
