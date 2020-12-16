@@ -51,7 +51,7 @@ setup(
     description="ALBA Python Serial with tango DeviceServer",
     entry_points={
         'console_scripts': [
-            'Py_ds_serial=py_ds_serial.tango.server:main [tango]',
+            'Serial=py_ds_serial.tango.server:main [tango]',
         ],
     },
     install_requires=requirements,

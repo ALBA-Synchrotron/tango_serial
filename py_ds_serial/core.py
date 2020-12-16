@@ -6,16 +6,16 @@
 # Distributed under the GNU General Public License v3. See LICENSE for more
 # info.
 """
-Core Py_ds_serial module.
+Core Serial module.
 
 It can receive an asynchronous connection object. Example::
 
     from connio import connection_for_url
-    from py_ds_serial.core import Py_ds_serial
+    from py_ds_serial.core import Serial
 
     async def main():
         tcp = connection_for_url("tcp://py_ds_serial.acme.org:5000")
-        py_ds_serial = Py_ds_serial(tcp)
+        py_ds_serial = Serial(tcp)
 
         idn = await py_ds_serial.get_idn()
         print(idn)
@@ -27,8 +27,8 @@ import serial
 import io
 
 
-class Py_ds_serial:
-    """The central Py_ds_serial"""
+class Serial:
+    """The central Serial"""
 
     def __init__(self, serialline: str, baudrate: int, charlength: int,
                  newline: int, parity: str, timeout: int, stopbits: int):

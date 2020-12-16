@@ -8,7 +8,7 @@ import unittest
 from py_ds_serial import core
 
 
-class TestPy_ds_serial(unittest.TestCase):
+class TestSerial(unittest.TestCase):
     """Tests for `py_ds_serial` package."""
 
     def setUp(self):

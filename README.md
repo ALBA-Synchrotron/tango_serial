@@ -23,8 +23,8 @@ From within your favorite python environment type:
 
 ## Library
 
-The core of the py_ds_serial library consists of Py_ds_serial object.
-To create a Py_ds_serial object you need to pass a communication object.
+The core of the py_ds_serial library consists of Serial object.
+To create a Serial object you need to pass a communication object.
 
 The communication object can be any object that supports a simple API
 consisting of two methods (either the sync or async version is supported):
@@ -44,18 +44,18 @@ about installing it).
 This library includes both async and sync versions of the TCP object. It also
 supports a set of features like re-connection and timeout handling.
 
-Here is how to connect to a Py_ds_serial controller:
+Here is how to connect to a Serial controller:
 
 ```python
 import asyncio
 
 from sockio.aio import TCP
-from py_ds_serial import Py_ds_serial
+from py_ds_serial import Serial
 
 
 async def main():
     tcp = TCP("192.168.1.123", 5000)  # use host name or IP
-    py_ds_serial_dev = Py_ds_serial(tcp)
+    py_ds_serial_dev = Serial(tcp)
 
     idn = await py_ds_serial_dev.idn()
     print("Connected to {} ({})".format(idn))
@@ -76,9 +76,9 @@ Make sure everything is installed with:
 
 `$ pip install py_ds_serial[tango]`
 
-Register a Py_ds_serial tango server in the tango database:
+Register a Serial tango server in the tango database:
 ```
-$ tangoctl server add -s Py_ds_serial/test -d Py_ds_serial test/py_ds_serial/1
+$ tangoctl server add -s Serial/test -d Serial test/py_ds_serial/1
 $ tangoctl device property write -d test/py_ds_serial/1 -p address -v "tcp://192.168.123:5000"
 ```
 
@@ -89,7 +89,7 @@ tango tool like [fandango](https://pypi.org/project/fandango/) or Jive)
 Launch the server with:
 
 ```terminal
-$ Py_ds_serial test
+$ Serial test
 ```
 
 

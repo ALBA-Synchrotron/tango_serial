@@ -6,7 +6,7 @@
 # Distributed under the GNU General Public License v3. See LICENSE for more
 # info.
 
-"""Tango server class for Py_ds_serial"""
+"""Tango server class for Serial"""
 
 
 from tango.server import Device, command, device_property
@@ -14,7 +14,7 @@ from tango.server import Device, command, device_property
 import py_ds_serial.core
 
 
-class Py_ds_serial(Device):
+class Serial(Device):
 
     serialline = device_property(
 
@@ -60,7 +60,7 @@ class Py_ds_serial(Device):
 
     def init_device(self):
         super().init_device()
-        self.py_ds_serial = py_ds_serial.core.Py_ds_serial(
+        self.py_ds_serial = py_ds_serial.core.Serial(
             self.serialline, self.baudrate, self.charlength,
             self.newline, self.parity, self.timeout,
             self.stopbits
@@ -119,4 +119,4 @@ if __name__ == "__main__":
     import logging
     fmt = "%(asctime)s %(levelname)s %(name)s %(message)s"
     logging.basicConfig(level="DEBUG", format=fmt)
-    Py_ds_serial.run_server()
+    Serial.run_server()
