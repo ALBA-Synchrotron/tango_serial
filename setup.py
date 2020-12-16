@@ -18,12 +18,12 @@ with open('HISTORY.md') as history_file:
 
 requirements = [
     "connio",
-    
+
 ]
 
 extra_requirements = {
     "tango": ["pytango"],
-    
+
 }
 if extra_requirements:
     extra_requirements["all"] = list(set.union(*(set(i) for i in extra_requirements.values())))
