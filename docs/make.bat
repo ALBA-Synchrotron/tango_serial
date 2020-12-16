@@ -9,7 +9,7 @@ if "%SPHINXBUILD%" == "" (
 )
 set SOURCEDIR=.
 set BUILDDIR=_build
-set SPHINXPROJ=py_ds_serial
+set SPHINXPROJ=tango_serial
 
 if "%1" == "" goto help
 

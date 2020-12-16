@@ -5,7 +5,7 @@
 
 import unittest
 
-from py_ds_serial import core
+from tango_serial import core
 
 
 class TestSerial(unittest.TestCase):

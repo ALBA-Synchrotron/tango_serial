@@ -26,11 +26,12 @@ extra_requirements = {
 
 }
 if extra_requirements:
-    extra_requirements["all"] = list(set.union(*(set(i) for i in extra_requirements.values())))
+    extra_requirements["all"] = list(
+        set.union(*(set(i) for i in extra_requirements.values())))
 
-setup_requirements = [ ]
+setup_requirements = []
 
-test_requirements = [ ]
+test_requirements = []
 
 setup(
     author="Alberto López Sánchez",

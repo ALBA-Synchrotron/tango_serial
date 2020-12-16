@@ -9,7 +9,7 @@ You can contribute in many ways:
 
 ### Report Bugs
 
-Report bugs at https://github.com/catunlock/py_ds_serial/issues.
+Report bugs at https://github.com/catunlock/tango_serial/issues.
 
 If you are reporting a bug, please include:
 
@@ -35,7 +35,7 @@ articles, and such.
 
 ### Submit Feedback
 
-The best way to send feedback is to file an issue at https://github.com/catunlock/py_ds_serial/issues.
+The best way to send feedback is to file an issue at https://github.com/catunlock/tango_serial/issues.
 
 If you are proposing a feature:
 
@@ -46,17 +46,17 @@ If you are proposing a feature:
 
 ### Get Started!
 
-Ready to contribute? Here's how to set up `py_ds_serial` for local development.
+Ready to contribute? Here's how to set up `tango_serial` for local development.
 
-1. Fork the `py_ds_serial` repo on GitHub.
+1. Fork the `tango_serial` repo on GitHub.
 2. Clone your fork locally:
     ```
-    $ git clone git@github.com:your_name_here/py_ds_serial.git
+    $ git clone git@github.com:your_name_here/tango_serial.git
     ```
 3. Install your local copy into a virtualenv. Assuming you have virtualenvwrapper installed, this is how you set up your fork for local development:
     ```
-    $ mkvirtualenv py_ds_serial
-    $ cd py_ds_serial/
+    $ mkvirtualenv tango_serial
+    $ cd tango_serial/
     $ python setup.py develop
     ```
 4. Create a branch for local development:
@@ -68,7 +68,7 @@ Ready to contribute? Here's how to set up `py_ds_serial` for local development.
 5. When you're done making changes, check that your changes pass flake8 and the
    tests, including testing other Python versions with tox:
     ```
-    $ flake8 py_ds_serial tests
+    $ flake8 tango_serial tests
     $ python setup.py test or pytest
     $ tox
     ```
@@ -92,7 +92,7 @@ Before you submit a pull request, check that it meets these guidelines:
    your new functionality into a function with a docstring, and add the
    feature to the list in README.rst.
 3. The pull request should work for Python 3.5, 3.6, 3.7 and 3.8, and for PyPy. Check
-   https://travis-ci.com/catunlock/py_ds_serial/pull_requests
+   https://travis-ci.com/catunlock/tango_serial/pull_requests
    and make sure that the tests pass for all supported Python versions.
 
 ## Tips
@@ -101,7 +101,7 @@ To run a subset of tests:
 
 ```
 
-$ python -m unittest tests.test_py_ds_serial
+$ python -m unittest tests.test_tango_serial
 ```
 
 ## Deploying

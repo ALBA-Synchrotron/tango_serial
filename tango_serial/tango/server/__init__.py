@@ -7,7 +7,7 @@
 
 """Tango server module for ALBA Python Serial DeviceServer."""
 
-from .py_ds_serial import Serial
+from . import Serial
 
 
 def main():

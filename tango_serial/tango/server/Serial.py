@@ -11,7 +11,7 @@
 
 from tango.server import Device, command, device_property
 
-import TangoSerial.core
+import tango_serial.core
 
 
 class Serial(Device):
@@ -36,6 +36,7 @@ class Serial(Device):
         doc="The character"
         "length used with the serial line protocol."
         "The possibilities are 8, 7, 6 or 5 bits per character.")
+    # TODO: With 6 and five doesn't work in the Arduino.
 
     newline = device_property(
         dtype=int, default_value=13,
@@ -60,24 +61,24 @@ class Serial(Device):
 
     def init_device(self):
         super().init_device()
-        self.py_ds_serial = TangoSerial.core.Serial(
+        self.serial = tango_serial.core.Serial(
             self.serialline, self.baudrate, self.charlength,
             self.newline, self.parity, self.timeout,
             self.stopbits
         )
 
-        self.py_ds_serial.connect()
+        self.serial.connect()
 
-    @command
+    @command(dtype_in=str, doc_in="string of characters",
+             dtype_out=int, doc_out="number of characters written")
     def DevSerWriteString(self, string: str) -> int:
         """
         Write a string of characters to a serial line and return the number of
         characters written.
         """
-        # TODO
-        return self.py_ds_serial.write_string(string)
+        return self.serial.write_string(string)
 
-    @command
+    @command(dtype_in=int, doc_in="0=input 1=output 2=both")
     def DevSerFlush(self, what: int) -> None:
         """
         Flush serial line port according to argin passed. 0=input 1=output
@@ -85,34 +86,34 @@ class Serial(Device):
         """
         # TODO: Comprobar que el comportamiento es el esperado. flush input
         # discards. flush output waits to write
-        self.py_ds_serial.clear_buff(what)
+        self.serial.clear_buff(what)
 
-    @command
-    def DevSerReadChar(self, argin: int) -> bytes:
+    @command(dtype_in=int, doc_in="SL_RAW SL_NCHAR SL_LINE",
+             dtype_out=str, doc_out="byte array with the characters readed.")
+    def DevSerReadChar(self, argin: int) -> str:
         """
         Read an array of characters, the type of read is specified in the input
         parameter, it can be SL_RAW SL_NCHAR SL_LINE.
         """
-        # TODO: Check
-        return self.py_ds_serial.read(argin)
+        return self.serial.read(argin)
 
-    @command
-    def DevSerReadRaw(self) -> bytes:
+    @command(dtype_out=str, doc_out="byte array with the characters readed.")
+    def DevSerReadRaw(self) -> str:
         """
         Read a string from the serialline device in mode raw (no end of string
         expected, just empty the entire serialline receiving buffer).
         """
-        # TODO: Check
-        return self.py_ds_serial.readall()
+        return self.serial.readall()
 
-    @command
-    def DevSerWriteChar(self, bytes) -> int:
+    @command(dtype_in=str, doc_in="string of characters",
+             dtype_out=int, doc_out="number of characters written")
+    def DevSerWriteChar(self, chararray: str) -> int:
         """
         Write N characters to a serial line and return the number of characters
         written.
         """
         # TODO: Check
-        return self.py_ds_serial.write_string(bytes)
+        return self.serial.write_string(chararray)
 
 
 if __name__ == "__main__":

@@ -11,13 +11,13 @@ Core Serial module.
 It can receive an asynchronous connection object. Example::
 
     from connio import connection_for_url
-    from py_ds_serial.core import Serial
+    from serial.core import Serial
 
     async def main():
-        tcp = connection_for_url("tcp://py_ds_serial.acme.org:5000")
-        py_ds_serial = Serial(tcp)
+        tcp = connection_for_url("tcp://serial.acme.org:5000")
+        serial = Serial(tcp)
 
-        idn = await py_ds_serial.get_idn()
+        idn = await serial.get_idn()
         print(idn)
 
     asyncio.run(main())
@@ -61,7 +61,7 @@ class Serial:
         self._serialline = serialline
         self._baudrate = baudrate
         self._timeout = timeout / 1000.0  # Convert ms to s.
-        self._newline = newline
+        self._newline = chr(newline)
 
         if charlength == 5:
             self._charlength = serial.FIVEBITS
@@ -108,12 +108,12 @@ class Serial:
         self._sio = io.TextIOWrapper(
             io.BufferedReader(self._sl), newline=self._newline)
 
-    def write_string(self, string: bytes) -> int:
+    def write_string(self, string: str) -> int:
         """
         Write a string of characters to a serial line and return the number of
         characters written.
         """
-        return self._sl.write(string)
+        return self._sl.write(string.encode('ascii'))
 
     def clear_buff(self, option=1):
         if option == 1:
@@ -130,20 +130,15 @@ class Serial:
         # SL_RAW = 0, SL_NCHAR=1, SL_LINE=2
         read_type = argin & 0x000f
 
-        assert read_type in [0, 1, 2]
         if read_type == 0:
-            return self.py_ds_serial.readall()
+            return self.readall()
         if read_type == 1:
             nchar = argin >> 8
-            return self.py_ds_serial.read_until(nchar)
+            return self._sl.read_until(self._newline, nchar)
         if read_type == 2:
-            return self.py_ds_serial.readline()
-
-    def readline(self) -> bytes:
-        self._sio.readline()
+            return self._sio.readline()
+        else:
+            raise ValueError("Error in the read type: {}".format(read_type))
 
     def readall(self) -> bytes:
         return self._sl.read_all()
-
-    def read_until(self, size: int) -> bytes:
-        return self._sl.read_until(self._sl._newline, size)
