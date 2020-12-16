@@ -126,6 +126,19 @@ class Py_ds_serial:
         else:
             raise ValueError('Option {} not valid'.format(option))
 
+    def read(self, argin: int) -> bytes:
+        # SL_RAW = 0, SL_NCHAR=1, SL_LINE=2
+        read_type = argin & 0x000f
+
+        assert read_type in [0, 1, 2]
+        if read_type == 0:
+            return self.py_ds_serial.readall()
+        if read_type == 1:
+            nchar = argin >> 8
+            return self.py_ds_serial.read_until(nchar)
+        if read_type == 2:
+            return self.py_ds_serial.readline()
+
     def readline(self) -> bytes:
         self._sio.readline()
 

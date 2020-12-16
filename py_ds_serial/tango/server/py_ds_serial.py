@@ -8,15 +8,13 @@
 
 """Tango server class for Py_ds_serial"""
 
-from tango import GreenMode
+
 from tango.server import Device, command, device_property
 
 import py_ds_serial.core
 
 
 class Py_ds_serial(Device):
-
-    green_mode = GreenMode.Asyncio
 
     serialline = device_property(
 
@@ -60,11 +58,15 @@ class Py_ds_serial(Device):
         doc="The number of stop bits used with the serial line protocol."
         " The possibilities are 1 or 2 stop bits.")
 
-    # TODO: Init
-    async def init_device(self):
-        await super().init_device()
-        self.connection = None
-        self.py_ds_serial = py_ds_serial.core.Py_ds_serial(self.connection)
+    def init_device(self):
+        super().init_device()
+        self.py_ds_serial = py_ds_serial.core.Py_ds_serial(
+            self.serialline, self.baudrate, self.charlength,
+            self.newline, self.parity, self.timeout,
+            self.stopbits
+        )
+
+        self.py_ds_serial.connect()
 
     @command
     def DevSerWriteString(self, string: str) -> int:
@@ -92,17 +94,7 @@ class Py_ds_serial(Device):
         parameter, it can be SL_RAW SL_NCHAR SL_LINE.
         """
         # TODO: Check
-        # SL_RAW = 0, SL_NCHAR=1, SL_LINE=2
-        read_type = argin & 0x000f
-
-        assert read_type in [0, 1, 2]
-        if read_type == 0:
-            return self.py_ds_serial.readall()
-        if read_type == 1:
-            nchar = argin >> 8
-            return self.py_ds_serial.read_until(nchar)
-        if read_type == 2:
-            return self.py_ds_serial.readline()
+        return self.py_ds_serial.read(argin)
 
     @command
     def DevSerReadRaw(self) -> bytes:
