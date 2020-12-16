@@ -11,4 +11,4 @@ __author__ = """Alberto López Sánchez"""
 __email__ = 'alopez@cells.es'
 __version__ = '0.1.0'
 
-from .core import Serial
+# from .core import Serial

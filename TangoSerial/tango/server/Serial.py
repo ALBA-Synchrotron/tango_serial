@@ -11,7 +11,7 @@
 
 from tango.server import Device, command, device_property
 
-import serial.core
+import TangoSerial.core
 
 
 class Serial(Device):
@@ -60,7 +60,7 @@ class Serial(Device):
 
     def init_device(self):
         super().init_device()
-        self.py_ds_serial = serial.core.Serial(
+        self.py_ds_serial = TangoSerial.core.Serial(
             self.serialline, self.baudrate, self.charlength,
             self.newline, self.parity, self.timeout,
             self.stopbits
