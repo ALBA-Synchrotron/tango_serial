@@ -10,8 +10,6 @@
 ALBA Python Serial with tango DeviceServer
 
 
-
-
 Apart from the core library, an optional [tango](https://tango-controls.org/) device server is also provided.
 
 
