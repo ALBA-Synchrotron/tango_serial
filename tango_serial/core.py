@@ -115,12 +115,12 @@ class Serial:
         """
         return self._sl.write(string.encode('ascii'))
 
-    def clear_buff(self, option=1):
-        if option == 1:
-            self._sl.flush
-        elif option == 2:
+    def clear_buff(self, option=0):
+        if option == 0:
             self._sl.reset_input_buffer()
-        elif option == 3:
+        elif option == 1:
+            self._sl.flush()
+        elif option == 2:
             self._sl.flush()
             self._sl.reset_input_buffer()
         else:
