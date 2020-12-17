@@ -8,7 +8,7 @@
 """Top-level package for ALBA Python Serial DeviceServer."""
 
 __author__ = """Alberto López Sánchez"""
-__email__ = 'alopez@cells.es'
+__email__ = 'ctbeamlines@cells.es'
 __version__ = '0.1.0'
 
 # from .core import Serial

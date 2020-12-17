@@ -35,7 +35,7 @@ test_requirements = []
 
 setup(
     author="Alberto López Sánchez",
-    author_email='alopez@cells.es',
+    author_email='ctbeamlines@cells.es',
     python_requires='>=3.5',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',

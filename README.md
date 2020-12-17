@@ -64,10 +64,6 @@ async def main():
 asyncio.run(main())
 ```
 
-
-
-
-
 ### Tango server
 
 A [tango](https://tango-controls.org/) device server is also provided.
@@ -98,6 +94,7 @@ $ Serial test
 ### Development Lead
 
 * Alberto López Sánchez <alopez@cells.es>
+* CTBeamlines (ctbeamlines@cells.es)
 
 ### Contributors
 
