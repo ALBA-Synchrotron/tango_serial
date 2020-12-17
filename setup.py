@@ -52,7 +52,7 @@ setup(
     description="ALBA Python Serial with tango DeviceServer",
     entry_points={
         'console_scripts': [
-            'Serial=py_ds_serial.tango.server:main [tango]',
+            'Serial=tango_serial.tango.server:main [tango]',
         ],
     },
     install_requires=requirements,
@@ -61,13 +61,13 @@ setup(
     long_description=readme + '\n\n' + history,
     long_description_content_type="text/markdown",
     include_package_data=True,
-    keywords='py_ds_serial',
-    name='py_ds_serial',
-    packages=find_packages(include=['py_ds_serial', 'py_ds_serial.*']),
+    keywords='tango_serial',
+    name='tango_serial',
+    packages=find_packages(include=['tango_serial', 'tango_serial.*']),
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,
-    url='https://github.com/catunlock/py_ds_serial',
+    url='https://github.com/catunlock/tango_serial',
     version='0.1.0',
     zip_safe=False,
 )

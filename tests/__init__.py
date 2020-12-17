@@ -1,1 +1,1 @@
-"""Unit test package for py_ds_serial."""
+"""Unit test package for tango_serial."""
