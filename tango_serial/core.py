@@ -6,21 +6,33 @@
 # Distributed under the GNU General Public License v3. See LICENSE for more
 # info.
 """
-Core Serial module.
+Core Serial module to adapt the Tango Serial Device Server interface.
 
-It can receive an asynchronous connection object. Example::
+It can connects with any serial device. Example::
 
-    from connio import connection_for_url
     from serial.core import Serial
 
-    async def main():
-        tcp = connection_for_url("tcp://serial.acme.org:5000")
-        serial = Serial(tcp)
+    def main():
+        serial = Serial(
+            rfc2217://serialDevice.cells.es:40001,
+            # bauds speed of the device
+            baudrate=115200,
+            # the charlength o bytesize. it can be 8, 7, 6 or 5.
+            charlength=8,
+            # the ASCII value of the character used as newline.
+            newline=13,
+            # the parity. It can be none, odd or even.
+            parity='none',
+            # timeout response. It has to be lower than Tango timeout.
+            timeout=100,
+            # How many stopbits. 1 or 2.
+            stopbits=1,
+        )
 
         idn = await serial.get_idn()
         print(idn)
 
-    asyncio.run(main())
+    main()
 """
 
 import serial
@@ -99,7 +111,6 @@ class Serial:
             raise ValueError("stopbits has to be 1, 2 or 1.5. "
                              "passed: {}".format(stopbits))
 
-    def connect(self):
         self._com = serial.serial_for_url(
             self._serialline, timeout=self._timeout, baudrate=self._baudrate,
             bytesize=self._charlength, parity=self._parity,
@@ -116,6 +127,13 @@ class Serial:
         return self._com.write(string.encode('ascii'))
 
     def clear_buff(self, option=0):
+        """
+        Clears the input buffer or flushs the output buffer.
+        arguments
+        ----------
+        option : int
+            0 clears the input buffer, 1 clears the output buffer, 2 both
+        """
         if option == 0:
             self._com.reset_input_buffer()
         elif option == 1:
@@ -127,7 +145,10 @@ class Serial:
             raise ValueError('Option {} not valid'.format(option))
 
     def read(self, argin: int) -> bytes:
-        # SL_RAW = 0, SL_NCHAR=1, SL_LINE=2
+        """
+        Read chars from the serial line. SL_RAW = 0, SL_NCHAR=1, SL_LINE=2
+        """
+
         read_type = argin & 0x000f
 
         if read_type == 0:
@@ -142,4 +163,7 @@ class Serial:
             raise ValueError("Error in the read type: {}".format(read_type))
 
     def readall(self) -> bytes:
+        """
+        Reads all the remaining available in the serial line.
+        """
         return self._com.read_all()
