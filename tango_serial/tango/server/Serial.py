@@ -36,7 +36,7 @@ class Serial(Device):
         doc="The character"
         "length used with the serial line protocol."
         "The possibilities are 8, 7, 6 or 5 bits per character.")
-    # TODO: With 6 and five doesn't work in the Arduino.
+    # TODO: 6 and 5 doesn't work in the Arduino.
 
     newline = device_property(
         dtype=int, default_value=13,
@@ -66,8 +66,6 @@ class Serial(Device):
             self.newline, self.parity, self.timeout,
             self.stopbits
         )
-
-        self.serial.connect()
 
     @command(dtype_in=str, doc_in="string of characters",
              dtype_out=int, doc_out="number of characters written")
