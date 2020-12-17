@@ -134,7 +134,8 @@ class Serial:
             return self.readall()
         if read_type == 1:
             nchar = argin >> 8
-            return self._sl.read_until(self._newline, nchar)
+            print("[DEBUG] Using as _newline:", ord(self._newline))
+            return self._sl.read_until(size=nchar)
         if read_type == 2:
             return self._sio.readline()
         else:
