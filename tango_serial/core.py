@@ -100,29 +100,29 @@ class Serial:
                              "passed: {}".format(stopbits))
 
     def connect(self):
-        self._sl = serial.serial_for_url(
+        self._com = serial.serial_for_url(
             self._serialline, timeout=self._timeout, baudrate=self._baudrate,
             bytesize=self._charlength, parity=self._parity,
             stopbits=self._stopbits)
 
         self._sio = io.TextIOWrapper(
-            io.BufferedReader(self._sl), newline=self._newline)
+            io.BufferedReader(self._com), newline=self._newline)
 
     def write_string(self, string: str) -> int:
         """
         Write a string of characters to a serial line and return the number of
         characters written.
         """
-        return self._sl.write(string.encode('ascii'))
+        return self._com.write(string.encode('ascii'))
 
     def clear_buff(self, option=0):
         if option == 0:
-            self._sl.reset_input_buffer()
+            self._com.reset_input_buffer()
         elif option == 1:
-            self._sl.flush()
+            self._com.flush()
         elif option == 2:
-            self._sl.flush()
-            self._sl.reset_input_buffer()
+            self._com.flush()
+            self._com.reset_input_buffer()
         else:
             raise ValueError('Option {} not valid'.format(option))
 
@@ -131,15 +131,15 @@ class Serial:
         read_type = argin & 0x000f
 
         if read_type == 0:
-            return self.readall()
+            return self.readall() + b'\0'
         if read_type == 1:
             nchar = argin >> 8
             print("[DEBUG] Using as _newline:", ord(self._newline))
-            return self._sl.read_until(size=nchar)
+            return self._com.read_until(size=nchar)
         if read_type == 2:
             return self._sio.readline()
         else:
             raise ValueError("Error in the read type: {}".format(read_type))
 
     def readall(self) -> bytes:
-        return self._sl.read_all()
+        return self._com.read_all()
