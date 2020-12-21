@@ -35,6 +35,7 @@ It can connects with any serial device. Example::
     main()
 """
 
+from gevent.queue import Empty
 import serial
 import io
 
@@ -73,7 +74,7 @@ class Serial:
         self._serialline = serialline
         self._baudrate = baudrate
         self._timeout = timeout / 1000.0  # Convert ms to s.
-        self._newline = chr(newline)
+        self._newline = chr(newline).encode('ascii')
 
         if charlength == 5:
             self._charlength = serial.FIVEBITS
@@ -116,15 +117,19 @@ class Serial:
             bytesize=self._charlength, parity=self._parity,
             stopbits=self._stopbits)
 
-        self._sio = io.TextIOWrapper(
-            io.BufferedReader(self._com), newline=self._newline)
-
     def write_string(self, string: str) -> int:
         """
         Write a string of characters to a serial line and return the number of
         characters written.
         """
         return self._com.write(string.encode('ascii'))
+
+    def write_chars(self, chars: bytes) -> int:
+        """
+        Write the bytes directly to a serial line and return the number of
+        characters written.
+        """
+        return self._com.write(chars)
 
     def clear_buff(self, option=0):
         """
@@ -155,12 +160,21 @@ class Serial:
             return self.readall() + b'\0'
         if read_type == 1:
             nchar = argin >> 8
-            print("[DEBUG] Using as _newline:", ord(self._newline))
             return self._com.read_until(size=nchar)
         if read_type == 2:
-            return self._sio.readline()
+            return b"".join(self.__ireadline())
         else:
             raise ValueError("Error in the read type: {}".format(read_type))
+
+    def __ireadline(self):
+        while True:
+            ch = self._com.read()
+            if ch:
+                yield ch
+                if ch == self._newline:
+                    break
+            else:
+                break
 
     def readall(self) -> bytes:
         """

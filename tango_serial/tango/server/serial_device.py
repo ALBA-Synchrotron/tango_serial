@@ -12,6 +12,7 @@
 from tango.server import Device, command, device_property
 
 import tango_serial.core
+import tango
 
 
 class Serial(Device):
@@ -87,15 +88,17 @@ class Serial(Device):
         self.serial.clear_buff(what)
 
     @command(dtype_in=int, doc_in="SL_RAW SL_NCHAR SL_LINE",
-             dtype_out=str, doc_out="byte array with the characters readed.")
-    def DevSerReadChar(self, argin: int) -> str:
+             dtype_out=tango.DevVarCharArray,
+             doc_out="byte array with the characters readed.")
+    def DevSerReadChar(self, argin: int) -> tango.DevVarCharArray:
         """
         Read an array of characters, the type of read is specified in the input
         parameter, it can be SL_RAW SL_NCHAR SL_LINE.
         """
         return self.serial.read(argin)
 
-    @command(dtype_out=str, doc_out="byte array with the characters readed.")
+    @command(dtype_out=str,
+             doc_out="byte array with the characters readed.")
     def DevSerReadRaw(self) -> str:
         """
         Read a string from the serialline device in mode raw (no end of string
@@ -103,15 +106,15 @@ class Serial(Device):
         """
         return self.serial.readall()
 
-    @command(dtype_in=str, doc_in="string of characters",
+    @command(dtype_in=tango.DevVarCharArray, doc_in="string of characters",
              dtype_out=int, doc_out="number of characters written")
-    def DevSerWriteChar(self, chararray: str) -> int:
+    def DevSerWriteChar(self, chararray: bytes) -> int:
         """
         Write N characters to a serial line and return the number of characters
         written.
         """
         # TODO: Check
-        return self.serial.write_string(chararray)
+        return self.serial.write_chars(chararray)
 
 
 if __name__ == "__main__":

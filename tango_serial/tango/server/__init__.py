@@ -7,7 +7,7 @@
 
 """Tango server module for ALBA Python Serial DeviceServer."""
 
-from . import Serial
+from .serial_device import Serial
 
 
 def main():
@@ -17,4 +17,5 @@ def main():
     args = ['Serial'] + sys.argv[1:]
     fmt = '%(asctime)s %(threadName)s %(levelname)s %(name)s %(message)s'
     logging.basicConfig(level=logging.INFO, format=fmt)
+    print("Hasta aqui")
     tango.server.run((Serial,), args=args)
