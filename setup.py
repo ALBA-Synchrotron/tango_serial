@@ -17,8 +17,7 @@ with open('HISTORY.md') as history_file:
     history = history_file.read()
 
 requirements = [
-    "connio",
-
+    "gevent"
 ]
 
 extra_requirements = {
@@ -68,6 +67,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/catunlock/tango_serial',
-    version='0.1.1',
+    version='0.1.2',
     zip_safe=False,
 )
