@@ -35,9 +35,7 @@ It can connects with any serial device. Example::
     main()
 """
 
-from gevent.queue import Empty
 import serial
-import io
 
 
 class Serial:
