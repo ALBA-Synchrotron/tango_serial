@@ -9,6 +9,7 @@
 """Tango server class for Serial"""
 
 
+from serial.serialutil import SerialException
 from tango.server import Device, command, device_property
 
 import tango_serial.core
@@ -20,7 +21,7 @@ class Serial(Device):
     serialline = device_property(
 
         dtype=str,
-
+        default_value="/dev/ttyR0",
         doc="Device name, number or URL. "
         "Examples: '/dev/ttyACM0', 'COM1',"
         "rfc2217://<host>:<port>[?<option>[&<option>...]]."
@@ -62,11 +63,15 @@ class Serial(Device):
 
     def init_device(self):
         super().init_device()
-        self.serial = tango_serial.core.Serial(
-            self.serialline, self.baudrate, self.charlength,
-            self.newline, self.parity, self.timeout,
-            self.stopbits
-        )
+        try:
+            self.serial = tango_serial.core.Serial(
+                self.serialline, self.baudrate, self.charlength,
+                self.newline, self.parity, self.timeout,
+                self.stopbits
+            )
+        except SerialException as e:
+            print("Serial Exception initializing device: ", e)
+            print("\nCheck the properties!")
 
     @command(dtype_in=str, doc_in="string of characters",
              dtype_out=int, doc_out="number of characters written")
