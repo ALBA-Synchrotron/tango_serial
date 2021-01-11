@@ -18,19 +18,10 @@ with open('HISTORY.md') as history_file:
 
 requirements = [
     "gevent"
+    "pyserial"
+    "pytango"
 ]
 
-extra_requirements = {
-    "tango": ["pytango"],
-
-}
-if extra_requirements:
-    extra_requirements["all"] = list(
-        set.union(*(set(i) for i in extra_requirements.values())))
-
-setup_requirements = []
-
-test_requirements = []
 
 setup(
     author="Alberto López Sánchez",
@@ -55,7 +46,6 @@ setup(
         ],
     },
     install_requires=requirements,
-    extras_require=extra_requirements,
     license="GNU General Public License v3",
     long_description=readme + '\n\n' + history,
     long_description_content_type="text/markdown",
@@ -63,9 +53,7 @@ setup(
     keywords='tango_serial',
     name='tango_serial',
     packages=find_packages(include=['tango_serial', 'tango_serial.*']),
-    setup_requires=setup_requirements,
     test_suite='tests',
-    tests_require=test_requirements,
     url='https://github.com/catunlock/tango_serial',
     version='0.1.2',
     zip_safe=False,
