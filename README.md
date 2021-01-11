@@ -1,6 +1,5 @@
 # ALBA Python Serial DeviceServer
 
-
 [![ALBA Python Serial DeviceServer](https://img.shields.io/pypi/v/tango_serial.svg)](https://pypi.python.org/pypi/tango_serial)
 
 
