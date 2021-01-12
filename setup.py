@@ -53,7 +53,7 @@ setup(
     keywords='tango_serial',
     name='tango_serial',
     packages=find_packages(include=['tango_serial', 'tango_serial.*']),
-    test_suite='tests',
+
     url='https://github.com/catunlock/tango_serial',
     version='0.2.0',
     zip_safe=False,
