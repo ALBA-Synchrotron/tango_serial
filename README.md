@@ -18,6 +18,7 @@ From within your favorite python environment type:
 `$ pip install tango_serial`
 
 
+
 ### Tango server
 
 Register a Serial tango server in the tango database:
