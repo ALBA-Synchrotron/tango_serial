@@ -17,8 +17,8 @@ with open('HISTORY.md') as history_file:
     history = history_file.read()
 
 requirements = [
-    "gevent"
-    "pyserial"
+    "gevent",
+    "pyserial",
     "pytango"
 ]
 
