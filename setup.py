@@ -20,7 +20,6 @@ requirements = [
     # "pytango",
     # "gevent",
     # "pyserial",
-
 ]
 
 setup(
