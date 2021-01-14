@@ -1,11 +1,11 @@
-tango-serial (0.2.0+87.f153c7-1) unstable; urgency=medium
+tangods-serialline (0.2.0+87.f153c7-1) unstable; urgency=medium
 
   [ CI ]
   * New upstream version 0.2.0+87.f153c7
 
  -- CI Bot <controls@cells.es>  Tue, 12 Jan 2021 16:46:08 +0000
 
-tango-serial (0-1) unstable; urgency=medium
+tangods-serialline (0-1) unstable; urgency=medium
 
   * Initial release
 
