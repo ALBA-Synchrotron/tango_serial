@@ -1,0 +1,29 @@
+Source: tangods-serialline
+Section: unknown
+Priority: optional
+Maintainer: CI Bot <controls@cells.es>
+Build-Depends: debhelper-compat (= 13), dh-python, python3-setuptools, python3-all
+Standards-Version: 4.5.1
+Homepage: <insert the upstream URL, if relevant>
+#Vcs-Browser: https://salsa.debian.org/debian/tango-serial
+#Vcs-Git: https://salsa.debian.org/debian/tango-serial.git
+#Testsuite: autopkgtest-pkg-python
+Rules-Requires-Root: no
+
+Package: python3-tangods-serialline
+Architecture: all
+Depends: ${python3:Depends}, ${misc:Depends}
+Suggests: python-tango-serial-doc
+Description: <insert up to 60 chars description> (Python 3)
+ <insert long description, indented with spaces>
+ .
+ This package installs the library for Python 3.
+
+Package: python-tangods-serialline-doc
+Architecture: all
+Section: doc
+Depends: ${sphinxdoc:Depends}, ${misc:Depends}
+Description: <insert up to 60 chars description> (common documentation)
+ <insert long description, indented with spaces>
+ .
+ This is the common documentation package.
