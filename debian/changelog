@@ -7,6 +7,6 @@ tango-serial (0.2.0+87.f153c7-1) unstable; urgency=medium
 
 tango-serial (0-1) unstable; urgency=medium
 
-  * Initial release (Closes: #nnnn)  <nnnn is the bug number of your ITP>
+  * Initial release
 
  -- CI Bot <controls@cells.es>  Tue, 12 Jan 2021 16:46:06 +0000
