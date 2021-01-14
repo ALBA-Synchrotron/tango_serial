@@ -2,7 +2,7 @@ Source: tangods-serialline
 Section: python
 Priority: optional
 Maintainer: CI Bot <controls@cells.es>
-Build-Depends: debhelper-compat (= 13), dh-python, python3-setuptools, python3-all, python3-serial, python3-tango, python3-gevent
+Build-Depends: debhelper (>= 10), dh-python, python3-setuptools, python3-all, python3-serial, python3-tango, python3-gevent
 Standards-Version: 4.5.1
 Homepage: https://github.com/ALBA-Synchrotron/tango_serial
 #Vcs-Browser: https://salsa.debian.org/debian/tango-serial
