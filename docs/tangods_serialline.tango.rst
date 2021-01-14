@@ -1,5 +1,5 @@
-tango\_serial.tango package
-===========================
+tangods\_serialline.tango package
+=================================
 
 Subpackages
 -----------

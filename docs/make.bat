@@ -9,7 +9,7 @@ if "%SPHINXBUILD%" == "" (
 )
 set SOURCEDIR=.
 set BUILDDIR=_build
-set SPHINXPROJ=tango_serial
+set SPHINXPROJ=tangods_serialline
 
 if "%1" == "" goto help
 

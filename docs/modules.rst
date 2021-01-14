@@ -1,7 +1,7 @@
-tango_serial
-============
+tangods_serialline
+==================
 
 .. toctree::
    :maxdepth: 4
 
-   tango_serial
+   tangods_serialline

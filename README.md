@@ -1,9 +1,9 @@
 # ALBA Python Serial DeviceServer
 
-[![ALBA Python Serial DeviceServer](https://img.shields.io/pypi/v/tango_serial.svg)](https://pypi.python.org/pypi/tango_serial)
+[![ALBA Python Serial DeviceServer](https://img.shields.io/pypi/v/tangods_serialline.svg)](https://pypi.python.org/pypi/tangods_serialline)
 
 
-[![ALBA Python Serial DeviceServer updates](https://pyup.io/repos/github/catunlock/tango_serial/shield.svg)](https://pyup.io/repos/github/catunlock/tango_serial/)
+[![ALBA Python Serial DeviceServer updates](https://pyup.io/repos/github/catunlock/tangods_serialline/shield.svg)](https://pyup.io/repos/github/catunlock/tangods_serialline/)
 
 
 ALBA Python Serial device server for tango. with the aim to be API compatible
@@ -15,7 +15,7 @@ This device server internally uses [pyserial](https://pythonhosted.org/pyserial/
 
 From within your favorite python environment type:
 
-`$ pip install tango_serial`
+`$ pip install tangods_serialline`
 
 
 
@@ -23,8 +23,8 @@ From within your favorite python environment type:
 
 Register a Serial tango server in the tango database:
 ```
-$ tangoctl server add -s Serial/test -d Serial test/tango_serial/1
-$ tangoctl device property write -d test/tango_serial/1 -p serialline -v "rfc2217://192.168.123:5000"
+$ tangoctl server add -s Serial/test -d Serial test/tangods_serialline/1
+$ tangoctl device property write -d test/tangods_serialline/1 -p serialline -v "rfc2217://192.168.123:5000"
 ```
 
 (the above example uses [tangoctl](https://pypi.org/project/tangoctl/). You would need

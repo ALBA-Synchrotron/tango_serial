@@ -4,7 +4,7 @@
 # You can set these variables from the command line.
 SPHINXOPTS    =
 SPHINXBUILD   = python -msphinx
-SPHINXPROJ    = tango_serial
+SPHINXPROJ    = tangods_serialline
 SOURCEDIR     = .
 BUILDDIR      = _build
 

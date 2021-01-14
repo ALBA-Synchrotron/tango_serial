@@ -41,7 +41,7 @@ setup(
     description="ALBA Python Serial with tango DeviceServer",
     entry_points={
         'console_scripts': [
-            'Serial=tango_serial.tango.server:main',
+            'Serial=tangods_serialline.tango.server:main',
         ],
     },
     install_requires=requirements,
@@ -49,11 +49,11 @@ setup(
     long_description=readme + '\n\n' + history,
     long_description_content_type="text/markdown",
     include_package_data=True,
-    keywords='tangods_serialline',
-    name='tangods_serialline',
-    packages=find_packages(include=['tango_serial', 'tango_serial.*']),
+    keywords='tangods_seriallineline',
+    name='tangods_seriallineline',
+    packages=find_packages(include=['tangods_serialline', 'tangods_serialline.*']),
 
-    url='https://github.com/catunlock/tango_serial',
+    url='https://github.com/catunlock/tangods_serialline',
     version='0.2.0',
     zip_safe=False,
 )

@@ -1,5 +1,5 @@
-tango\_serial package
-=====================
+tangods\_serialline package
+===========================
 
 Subpackages
 -----------
@@ -12,8 +12,8 @@ Subpackages
 Submodules
 ----------
 
-tango\_serial.core module
--------------------------
+tangods\_serialline.core module
+-------------------------------
 
 .. automodule:: tangods_serialline.core
    :members:

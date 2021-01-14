@@ -7,7 +7,7 @@ Submodules
 tango\_serial.tango.server.register module
 ------------------------------------------
 
-.. automodule:: tango_serial.tango.server.register
+.. automodule:: tangods_serialline.tango.server.register
    :members:
    :undoc-members:
    :show-inheritance:
@@ -15,7 +15,7 @@ tango\_serial.tango.server.register module
 tango\_serial.tango.server.serial\_device module
 ------------------------------------------------
 
-.. automodule:: tango_serial.tango.server.serial_device
+.. automodule:: tangods_serialline.tango.server.serial_device
    :members:
    :undoc-members:
    :show-inheritance:
@@ -23,7 +23,7 @@ tango\_serial.tango.server.serial\_device module
 Module contents
 ---------------
 
-.. automodule:: tango_serial.tango.server
+.. automodule:: tangods_serialline.tango.server
    :members:
    :undoc-members:
    :show-inheritance:

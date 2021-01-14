@@ -12,7 +12,7 @@
 from serial.serialutil import SerialException
 from tango.server import Device, command, device_property
 
-import tango_serial.core
+import tangods_serialline.core
 import tango
 
 
@@ -64,7 +64,7 @@ class Serial(Device):
     def init_device(self):
         super().init_device()
         try:
-            self.serial = tango_serial.core.Serial(
+            self.serial = tangods_serialline.core.Serial(
                 self.serialline, self.baudrate, self.charlength,
                 self.newline, self.parity, self.timeout,
                 self.stopbits
