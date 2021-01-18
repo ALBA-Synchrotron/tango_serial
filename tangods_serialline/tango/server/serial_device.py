@@ -82,6 +82,16 @@ class Serial(Device):
         """
         return self.serial.write_string(string)
 
+    @command(dtype_in=int, doc_in="SL_RAW SL_NCHAR SL_LINE",
+             dtype_out=str,
+             doc_out="byte array with the characters readed.")
+    def DevSerReadString(self, argin: int = 2) -> str:
+        """
+        Read terminated string from the serialline device (end of string
+        expected).
+        """
+        return self.serial.read(argin)
+
     @command(dtype_in=int, doc_in="0=input 1=output 2=both")
     def DevSerFlush(self, what: int) -> None:
         """
@@ -119,6 +129,7 @@ class Serial(Device):
         written.
         """
         # TODO: Check
+        print("DevSerWriteChar: ", chararray)
         return self.serial.write_chars(chararray)
 
 
