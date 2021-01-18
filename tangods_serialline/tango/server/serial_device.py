@@ -85,7 +85,7 @@ class Serial(Device):
     @command(dtype_in=int, doc_in="SL_RAW SL_NCHAR SL_LINE",
              dtype_out=str,
              doc_out="byte array with the characters readed.")
-    def DevSerReadString(self, argin: int = 2) -> str:
+    def DevSerReadString(self, argin: int) -> str:
         """
         Read terminated string from the serialline device (end of string
         expected).
