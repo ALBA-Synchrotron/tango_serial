@@ -132,6 +132,14 @@ class Serial(Device):
         print("DevSerWriteChar: ", chararray)
         return self.serial.write_chars(chararray)
 
+    @command(dtype_in=tango.DevVarLongStringArray, dtype_out=tango.DevString)
+    def WriteRead(self, charaarray: bytes) -> int:
+        """
+        This method permit to send a request to a device throw the serial line and returns the
+        response of the device.
+        The commands write and read don`t return until they have not finished. 
+        """
+        raise RuntimeError("Uninplemented method")
 
 if __name__ == "__main__":
     import logging
