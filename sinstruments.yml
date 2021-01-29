@@ -1,0 +1,6 @@
+devices:
+- class: Serial
+  package: tangods_serialline.simulator
+  transports:
+  - type: serial
+    url: /tmp/serial1
