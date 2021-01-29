@@ -172,28 +172,32 @@ class Serial(Device):
         """
         This command sets the new timeout (in ms).
         """
-        raise RuntimeError("Uninplemented method")
+        self.serial.set_timeout(timeout)
 
     @command(dtype_in=tango.DevShort, dtype_out=tango.DevVoid)
     def DevSerSetParity(self, parity: int) -> None:
         """
         Sets the new parity of the serial line. NONE=0 ODD=1 EVEN=3 
         """
-        raise RuntimeError("Uninplemented method")
+        conversion = {0: "none", 1: "odd", 3: "even"}
+        self.serial.set_parity(conversion[parity])
 
     @command(dtype_in=tango.DevShort, dtype_out=tango.DevVoid)
-    def DevSerSetCharLength(self, charlength: int) -> None:
+    def DevSerSetCharLength(self, value: int) -> None:
         """
         Sets the new charlength. 0 = 8 bits, 1 = 7 bits, 2 = 6 bits, 3 = 5 bits 
         """
-        raise RuntimeError("Uninplemented method")
+        conversion = {0: 8, 1: 7, 2: 6, 3: 5}
+        self.serial.set_charlength(conversion[value])
 
     @command(dtype_in=tango.DevShort, dtype_out=tango.DevVoid)
-    def DevSerSetStopbit(self, stopbits: int) -> None:
+    def DevSerSetStopbit(self, value: int) -> None:
         """
-        Sets the new stop bit. 0 = none, 1 = one stop, 2 = 1.5 stop bit 
+        Sets the new stop bit. 0 = one, 1 = two stop, 2 = 1.5 stop bit
+        # TODO: Check if what the documentation says is true.
         """
-        self.serial.set_stopbits(stopbits)
+        conversion = {0: 1, 1: 2, 2: 3}
+        self.serial.set_stopbits(conversion[value])
 
     @command(dtype_in=tango.DevULong, dtype_out=tango.DevVoid)
     def DevSerSetBaudrate(self, baudrate: int) -> None:
