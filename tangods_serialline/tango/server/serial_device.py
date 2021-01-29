@@ -133,13 +133,81 @@ class Serial(Device):
         return self.serial.write_chars(chararray)
 
     @command(dtype_in=tango.DevVarLongStringArray, dtype_out=tango.DevString)
-    def WriteRead(self, charaarray: bytes) -> int:
+    def WriteRead(self, charaarray: bytes) -> str:
         """
-        This method permit to send a request to a device throw the serial line and returns the
-        response of the device.
+        This method permit to send a request to a device throw the serial line 
+        and returns the response of the device.
         The commands write and read don`t return until they have not finished. 
         """
         raise RuntimeError("Uninplemented method")
+
+    @command(dtype_in=tango.DevLong, dtype_out=tango.DevVarCharArray)
+    def DevSerReadNBinData(self, n_chars: int) -> tango.DevVarCharArray:
+        """
+        Read the specified number of char from the serial line.
+        If the number of caracters is greater than caracters avaiable, this 
+        command returns all caracters avaiables.
+        If there are no characters to be read returns an empty array. 
+        """
+        raise RuntimeError("Uninplemented method")
+
+    @command(dtype_in=tango.DevLong, dtype_out=tango.DevString)
+    def DevSerReadRetry(self, n_chars: int) -> str:
+        """
+        read a string from the serialline device in mode raw (no end
+        of string expected, just empty the entire serialline receiving buffer).
+        If read successfull, read again "nretry" times. 
+        """
+        raise RuntimeError("Uninplemented method")
+
+    @command(dtype_in=tango.DevVarLongArray, dtype_out=tango.DevVoid)
+    def DevSerSetParameter(self, parameters: tango.DevVarLongArray) -> None:
+        """
+        Set serial line parameters 
+        """
+        raise RuntimeError("Uninplemented method")
+
+    @command(dtype_in=tango.DevShort, dtype_out=tango.DevVoid)
+    def DevSerSetTimeout(self, timeout: int) -> None:
+        """
+        This command sets the new timeout (in ms).
+        """
+        raise RuntimeError("Uninplemented method")
+
+    @command(dtype_in=tango.DevShort, dtype_out=tango.DevVoid)
+    def DevSerSetParity(self, parity: int) -> None:
+        """
+        Sets the new parity of the serial line. NONE=0 ODD=1 EVEN=3 
+        """
+        raise RuntimeError("Uninplemented method")
+
+    @command(dtype_in=tango.DevShort, dtype_out=tango.DevVoid)
+    def DevSerSetCharLength(self, charlength: int) -> None:
+        """
+        Sets the new charlength. 0 = 8 bits, 1 = 7 bits, 2 = 6 bits, 3 = 5 bits 
+        """
+        raise RuntimeError("Uninplemented method")
+
+    @command(dtype_in=tango.DevShort, dtype_out=tango.DevVoid)
+    def DevSerSetStopbit(self, stopbits: int) -> None:
+        """
+        Sets the new stop bit. 0 = none, 1 = one stop, 2 = 1.5 stop bit 
+        """
+        self.serial.set_stopbits(stopbits)
+
+    @command(dtype_in=tango.DevULong, dtype_out=tango.DevVoid)
+    def DevSerSetBaudrate(self, baudrate: int) -> None:
+        """
+        Sets the new baudrateof the serial line.
+        """
+        self.serial.set_baudrate(baudrate)
+
+    @command(dtype_in=tango.DevUShort, dtype_out=tango.DevVoid)
+    def DevSerSetNewline(self, newline: int) -> None:
+        """
+        The new ending character in hexa. Default is 0x13 (=CR)
+        """
+        self.serial.set_newline(newline)
 
 if __name__ == "__main__":
     import logging

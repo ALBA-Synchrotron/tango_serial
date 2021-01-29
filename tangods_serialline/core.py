@@ -69,51 +69,68 @@ class Serial:
             possibilities are 1 or 2 stop bits.
 
         """
-        self._serialline = serialline
-        self._baudrate = baudrate
-        self._timeout = timeout / 1000.0  # Convert ms to s.
-        self._newline = chr(newline).encode('ascii')
 
-        if charlength == 5:
-            self._charlength = serial.FIVEBITS
-        elif charlength == 6:
-            self._charlength = serial.SIXBITS
-        elif charlength == 7:
-            self._charlength = serial.SEVENBITS
-        elif charlength == 8:
-            self._charlength = serial.EIGHTBITS
-        else:
-            raise ValueError(
-                "charlength has to be 5, 6, 7 or 8 bits. "
-                "passed {}".format(charlength))
+        self._com = serial.serial_for_url(serialline)
 
-        parity = parity.lower()
-        assert parity in ['none', 'empty', 'even', 'odd']
-        if parity == 'none' or parity == 'empty':
-            self._parity = serial.PARITY_NONE
-        elif parity == 'even':
-            self._parity = serial.PARITY_EVEN
-        elif parity == 'odd':
-            self._parity = serial.PARITY_ODD
+        if timeout is not None:
+            self.set_timeout(timeout)
+        if newline is not None:
+            self.set_newline(newline)
+        if baudrate is not None:
+            self.set_baudrate(baudrate)
+        if charlength is not None:
+            self.set_charlength(charlength)
+        if parity is not None:
+            self.set_parity(parity)
+        if stopbits is not None:
+            self.set_stopbits(stopbits)
+
+    def set_newline(self, value):
+        self._newline = chr(value).encode('ascii')
+
+    def set_timeout(self, value):
+        self._com.timeout = value / 1000.0  # Convert milliseconds to seconds.
+
+    def set_parity(self, value):
+        value = value.lower()
+        if value == 'none' or value == 'empty':
+            self._com.parity = serial.PARITY_NONE
+        elif value == 'even':
+            self._com.parity = serial.PARITY_EVEN
+        elif value == 'odd':
+            self._com.parity = serial.PARITY_ODD
         else:
             raise ValueError(
                 "parity has to be 'none', 'empty', 'even', 'odd'. "
-                "passed {}".format(parity))
+                "passed {}".format(value))
 
-        if stopbits == 1:
-            self._stopbits = serial.STOPBITS_ONE
-        elif stopbits == 2:
-            self._stopbits = serial.STOPBITS_TWO
-        elif stopbits == 1.5:
-            self._stopbits = serial.STOPBITS_ONE_POINT_FIVE
+    def set_stopbits(self, value):
+        if value == 1:
+            self._com.stopbits = serial.STOPBITS_ONE
+        elif value == 2:
+            self._com.stopbits = serial.STOPBITS_TWO
+        elif value == 1.5:
+            self._com.stopbits = serial.STOPBITS_ONE_POINT_FIVE
         else:
             raise ValueError("stopbits has to be 1, 2 or 1.5. "
-                             "passed: {}".format(stopbits))
+                             "passed: {}".format(value))
 
-        self._com = serial.serial_for_url(
-            self._serialline, timeout=self._timeout, baudrate=self._baudrate,
-            bytesize=self._charlength, parity=self._parity,
-            stopbits=self._stopbits)
+    def set_charlength(self, value):
+        if value == 5:
+            self._com.bytesize = serial.FIVEBITS
+        elif value == 6:
+            self._com.bytesize = serial.SIXBITS
+        elif value == 7:
+            self._com.bytesize = serial.SEVENBITS
+        elif value == 8:
+            self._com.bytesize = serial.EIGHTBITS
+        else:
+            raise ValueError(
+                "charlength has to be 5, 6, 7 or 8 bits. "
+                "passed {}".format(value))
+
+    def set_baudrate(self, value):
+        self._com.baudrate = value
 
     def write_string(self, string: str) -> int:
         """
