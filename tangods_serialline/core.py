@@ -41,8 +41,14 @@ import serial
 class Serial:
     """The central Serial"""
 
-    def __init__(self, serialline: str, baudrate: int, charlength: int,
-                 newline: int, parity: str, timeout: int, stopbits: int):
+    def __init__(self,
+                 serialline: str,
+                 baudrate: int = None,
+                 charlength: int = None,
+                 newline: int = None,
+                 parity: str = None,
+                 timeout: int = None,
+                 stopbits: int = None):
         """
         Class constructor.
 
@@ -109,7 +115,7 @@ class Serial:
             self._com.stopbits = serial.STOPBITS_ONE
         elif value == 2:
             self._com.stopbits = serial.STOPBITS_TWO
-        elif value == 1.5:
+        elif value == 3:
             self._com.stopbits = serial.STOPBITS_ONE_POINT_FIVE
         else:
             raise ValueError("stopbits has to be 1, 2 or 1.5. "
