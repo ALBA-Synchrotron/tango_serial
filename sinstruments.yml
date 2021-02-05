@@ -1,5 +1,5 @@
 devices:
-- class: Serial
+- class: SerialEcho
   package: tangods_serialline.simulator
   transports:
   - type: serial

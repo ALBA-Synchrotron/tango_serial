@@ -24,7 +24,7 @@ A simple *nc* client can be used to connect to the instrument:
 from sinstruments.simulator import BaseDevice
 
 
-class Serial(BaseDevice):
+class SerialEcho(BaseDevice):
 
     def handle_message(self, line):
         print("RECV:", line)
