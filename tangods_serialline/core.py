@@ -197,7 +197,7 @@ class Serial:
             else:
                 break
 
-    def readall(self) -> bytes:
+    def readall(self, _) -> bytes:
         """
         Reads all the remaining available in the serial line.
         """
