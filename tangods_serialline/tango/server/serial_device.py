@@ -14,6 +14,8 @@ from tango.server import Device, command, device_property
 
 import tangods_serialline.core
 import tango
+from time import sleep
+import logging
 
 
 class Serial(Device):
@@ -61,17 +63,32 @@ class Serial(Device):
         doc="The number of stop bits used with the serial line protocol."
         " The possibilities are 1 or 2 stop bits.")
 
+    def safe_reconnection(self, func, arg):
+        if self.connected:
+            try:
+                return func(arg)
+            except SerialException as e:
+                logging.warning("{}: {}".format(func.__name__, e))
+                self.init_device()
+        else:
+            self.init_device()
+
     def init_device(self):
         super().init_device()
-        try:
-            self.serial = tangods_serialline.core.Serial(
-                self.serialline, self.baudrate, self.charlength,
-                self.newline, self.parity, self.timeout,
-                self.stopbits
-            )
-        except SerialException as e:
-            print("Serial Exception initializing device: ", e)
-            print("\nCheck the properties!")
+        self.connected = False
+        if not self.connected:
+            try:
+                self.serial = tangods_serialline.core.Serial(
+                    self.serialline, self.baudrate, self.charlength,
+                    self.newline, self.parity, self.timeout,
+                    self.stopbits
+                )
+                self.connected = True
+            except SerialException as e:
+                print("Serial Exception initializing device: ", e)
+                print("\nCheck the properties!")
+                raise tango.CommunicationFailed("The port is down.")
+                sleep(1)
 
     @command(dtype_in=str, doc_in="string of characters",
              dtype_out=int, doc_out="number of characters written")
@@ -80,7 +97,7 @@ class Serial(Device):
         Write a string of characters to a serial line and return the number of
         characters written.
         """
-        return self.serial.write_string(string)
+        return self.safe_reconnection(self.serial.write_string, string)
 
     @command(dtype_in=int, doc_in="SL_RAW SL_NCHAR SL_LINE",
              dtype_out=str,
@@ -90,7 +107,7 @@ class Serial(Device):
         Read terminated string from the serialline device (end of string
         expected).
         """
-        return self.serial.read(argin)
+        return self.safe_reconnection(self.serial.read, argin)
 
     @command(dtype_in=int, doc_in="0=input 1=output 2=both")
     def DevSerFlush(self, what: int) -> None:
@@ -100,7 +117,7 @@ class Serial(Device):
         """
         # TODO: Comprobar que el comportamiento es el esperado. flush input
         # discards. flush output waits to write
-        self.serial.clear_buff(what)
+        self.safe_reconnection(self.serial.clear_buff, what)
 
     @command(dtype_in=int, doc_in="SL_RAW SL_NCHAR SL_LINE",
              dtype_out=tango.DevVarCharArray,
@@ -110,7 +127,7 @@ class Serial(Device):
         Read an array of characters, the type of read is specified in the input
         parameter, it can be SL_RAW SL_NCHAR SL_LINE.
         """
-        return self.serial.read(argin)
+        return self.safe_reconnection(self.serial.read, argin)
 
     @command(dtype_out=str,
              doc_out="byte array with the characters readed.")
@@ -119,7 +136,7 @@ class Serial(Device):
         Read a string from the serialline device in mode raw (no end of string
         expected, just empty the entire serialline receiving buffer).
         """
-        return self.serial.readall()
+        return self.safe_reconnection(self.serial.readall, None)
 
     @command(dtype_in=tango.DevVarCharArray, doc_in="string of characters",
              dtype_out=int, doc_out="number of characters written")
@@ -128,9 +145,7 @@ class Serial(Device):
         Write N characters to a serial line and return the number of characters
         written.
         """
-        # TODO: Check
-        print("DevSerWriteChar: ", chararray)
-        return self.serial.write_chars(chararray)
+        return self.safe_reconnection(self.serial.write_chars, chararray)
 
     @command(dtype_in=tango.DevVarLongStringArray, dtype_out=tango.DevString)
     def WriteRead(self, charaarray: bytes) -> str:
@@ -213,8 +228,8 @@ class Serial(Device):
         """
         self.serial.set_newline(newline)
 
+
 if __name__ == "__main__":
-    import logging
     fmt = "%(asctime)s %(levelname)s %(name)s %(message)s"
     logging.basicConfig(level="DEBUG", format=fmt)
     Serial.run_server()
