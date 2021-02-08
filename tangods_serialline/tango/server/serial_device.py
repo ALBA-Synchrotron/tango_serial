@@ -167,7 +167,7 @@ class Serial(Device):
         command returns all caracters avaiables.
         If there are no characters to be read returns an empty array. 
         """
-        raise RuntimeError("Uninplemented method")
+        return self.safe_reconnection(self.serial.read_nchars, n_chars)
 
     @command(dtype_in=tango.DevLong, dtype_out=tango.DevString)
     def DevSerReadRetry(self, nretry: int) -> str:

@@ -211,3 +211,6 @@ class Serial:
             if b == b"":
                 return buf.decode("utf-8")
         return buf.decode("utf-8")
+
+    def read_nchars(self, nchars):
+        return self._com.read(size=nchars)
