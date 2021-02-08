@@ -70,6 +70,9 @@ class Serial(Device):
             except SerialException as e:
                 logging.warning("{}: {}".format(func.__name__, e))
                 self.init_device()
+            except BrokenPipeError as e:
+                logging.warning("{}: {}".format(func.__name__, e))
+                self.init_device()
         else:
             self.init_device()
 
