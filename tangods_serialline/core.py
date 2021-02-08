@@ -178,7 +178,7 @@ class Serial:
         read_type = argin & 0x000f
 
         if read_type == 0:
-            return self.readall() + b'\0'
+            return self.readall(None) + b'\0'
         if read_type == 1:
             nchar = argin >> 8
             return self._com.read_until(size=nchar)
