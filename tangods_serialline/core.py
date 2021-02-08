@@ -36,6 +36,43 @@ It can connects with any serial device. Example::
 """
 
 import serial
+from enum import Enum
+import logging
+
+
+class ReadType(Enum):
+    Raw = 0
+    NChar = 1
+    Line = 2
+    Retry = 3
+
+
+class Parity(Enum):
+    No = 0
+    Odd = 1
+    Even = 3
+
+
+class Charlength(Enum):
+    Data8 = 0
+    Data7 = 1
+    Data6 = 2
+    Data5 = 3
+
+
+class Stopbits(Enum):
+    One = 0
+    OneAndHalf = 1
+    Two = 2
+
+
+class Parameter(Enum):
+    Timeout = 3
+    Parity = 4
+    Charlength = 5
+    Stopbits = 6
+    Baudrate = 7
+    Newline = 8
 
 
 class Serial:
@@ -44,11 +81,11 @@ class Serial:
     def __init__(self,
                  serialline: str,
                  baudrate: int = None,
-                 charlength: int = None,
+                 charlength: Charlength = None,
                  newline: int = None,
-                 parity: str = None,
+                 parity: Parity = None,
                  timeout: int = None,
-                 stopbits: int = None):
+                 stopbits: Stopbits = None):
         """
         Class constructor.
 
@@ -58,77 +95,113 @@ class Serial:
             The path and name of the serial line device to be used.
         baudrate : int
             The communication speed in baud used with the serial line protocol.
-        charlength : int
+        charlength : Charlength
             The character length used with the serial line protocol.
             The possibilities are 8, 7, 6 or 5 bits per character.
         newline : int
             End of message Character used in particular by the DevSerReadLine
             command Default = 13
-        parity : str
+        parity : Parity
             The parity used with the serial line protocol. The possibilities are
             none = empty, even or odd.
         timeout : float
             The timout value in seconds for for answers of requests send to the
             serial line.
-        stopbits : int
+        stopbits : Stopbits
             The number of stop bits used with the serial line protocol. The
-            possibilities are 1 or 2 stop bits.
+            possibilities are 1, 1.5 or 2 stop bits.
 
         """
 
-        self._com = serial.serial_for_url(serialline)
+        self._serialline = serialline
+        self._baudrate = baudrate
+        self._timeout = timeout / 1000.0  # Convert ms to s.
+        self._newline = chr(newline).encode('ascii')
 
-        if timeout is not None:
-            self.set_timeout(timeout)
-        if newline is not None:
-            self.set_newline(newline)
-        if baudrate is not None:
-            self.set_baudrate(baudrate)
-        if charlength is not None:
-            self.set_charlength(charlength)
-        if parity is not None:
-            self.set_parity(parity)
-        if stopbits is not None:
-            self.set_stopbits(stopbits)
+        if charlength == 5:
+            self._charlength = serial.FIVEBITS
+        elif charlength == 6:
+            self._charlength = serial.SIXBITS
+        elif charlength == 7:
+            self._charlength = serial.SEVENBITS
+        elif charlength == 8:
+            self._charlength = serial.EIGHTBITS
+        else:
+            raise ValueError(
+                "charlength has to be 5, 6, 7 or 8 bits. "
+                "passed {}".format(charlength))
+
+        parity = parity.lower()
+        assert parity in ['none', 'empty', 'even', 'odd']
+        if parity == 'none' or parity == 'empty':
+            self._parity = serial.PARITY_NONE
+        elif parity == 'even':
+            self._parity = serial.PARITY_EVEN
+        elif parity == 'odd':
+            self._parity = serial.PARITY_ODD
+        else:
+            raise ValueError(
+                "parity has to be 'none', 'empty', 'even', 'odd'. "
+                "passed {}".format(parity))
+
+        if stopbits == 1:
+            self._stopbits = serial.STOPBITS_ONE
+        elif stopbits == 2:
+            self._stopbits = serial.STOPBITS_TWO
+        elif stopbits == 1.5:
+            self._stopbits = serial.STOPBITS_ONE_POINT_FIVE
+        else:
+            raise ValueError("stopbits has to be 1, 2 or 1.5. "
+                             "passed: {}".format(stopbits))
+
+        self._com = serial.serial_for_url(
+            self._serialline, timeout=self._timeout, baudrate=self._baudrate,
+            bytesize=self._charlength, parity=self._parity,
+            stopbits=self._stopbits)
 
     def set_newline(self, value):
+        logging.info("Setting newline to: {}".format(value))
         self._newline = chr(value).encode('ascii')
 
     def set_timeout(self, value):
+        logging.info("Setting timeout to: {}".format(value))
         self._com.timeout = value / 1000.0  # Convert milliseconds to seconds.
 
-    def set_parity(self, value):
-        value = value.lower()
-        if value == 'none' or value == 'empty':
+    def set_parity(self, value: Parity):
+        logging.info("Setting parity to: {}".format(value))
+
+        if value == Parity.No:
             self._com.parity = serial.PARITY_NONE
-        elif value == 'even':
+        elif value == Parity.Even:
             self._com.parity = serial.PARITY_EVEN
-        elif value == 'odd':
+        elif value == Parity.Odd:
             self._com.parity = serial.PARITY_ODD
         else:
             raise ValueError(
                 "parity has to be 'none', 'empty', 'even', 'odd'. "
                 "passed {}".format(value))
 
-    def set_stopbits(self, value):
-        if value == 1:
+    def set_stopbits(self, value: Stopbits):
+        logging.info("Setting stopbits to: {}".format(value))
+        if value == Stopbits.One:
             self._com.stopbits = serial.STOPBITS_ONE
-        elif value == 2:
+        elif value == Stopbits.Two:
             self._com.stopbits = serial.STOPBITS_TWO
-        elif value == 3:
+        elif value == Stopbits.OneAndHalf:
             self._com.stopbits = serial.STOPBITS_ONE_POINT_FIVE
         else:
             raise ValueError("stopbits has to be 1, 2 or 1.5. "
                              "passed: {}".format(value))
 
-    def set_charlength(self, value):
-        if value == 5:
+    def set_charlength(self, value: Charlength):
+        logging.info("Setting charlength to: {}".format(value))
+        if value == Charlength.Data5:
             self._com.bytesize = serial.FIVEBITS
-        elif value == 6:
+        elif value == Charlength.Data6:
             self._com.bytesize = serial.SIXBITS
-        elif value == 7:
+        elif value == Charlength.Data7:
             self._com.bytesize = serial.SEVENBITS
-        elif value == 8:
+        elif value == Charlength.Data8:
             self._com.bytesize = serial.EIGHTBITS
         else:
             raise ValueError(
@@ -136,6 +209,7 @@ class Serial:
                 "passed {}".format(value))
 
     def set_baudrate(self, value):
+        logging.info("Setting baudrate to: {}".format(value))
         self._com.baudrate = value
 
     def write_string(self, string: str) -> int:
@@ -184,6 +258,9 @@ class Serial:
             return self._com.read_until(size=nchar)
         if read_type == 2:
             return b"".join(self.__ireadline())
+        if read_type == 3:
+            nretry = argin >> 8
+            return self.readretry(nretry)
         else:
             raise ValueError("Error in the read type: {}".format(read_type))
 
@@ -209,8 +286,24 @@ class Serial:
             b = self._com.read_all()
             buf.extend(b)
             if b == b"":
-                return buf.decode("utf-8")
-        return buf.decode("utf-8")
+                return buf
+        return buf
 
     def read_nchars(self, nchars):
         return self._com.read(size=nchars)
+
+    def set_parameter(self, params):
+        print("holaa")
+        for type, value in params:
+            if type == Parameter.Newline.value:
+                self.set_newline(value)
+            if type == Parameter.Baudrate.value:
+                self.set_baudrate(value)
+            if type == Parameter.Charlength.value:
+                self.set_charlength(Charlength(value))
+            if type == Parameter.Parity.value:
+                self.set_parity(Parity(value))
+            if type == Parameter.Stopbits.value:
+                self.set_stopbits(Stopbits(value))
+            if type == Parameter.Timeout.value:
+                self.set_timeout(value)

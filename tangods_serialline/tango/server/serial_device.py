@@ -12,6 +12,7 @@
 from serial.serialutil import SerialException
 from tango.server import Device, command, device_property
 
+from tangods_serialline.core import Charlength, Parity, Stopbits
 import tangods_serialline.core
 import tango
 from time import sleep
@@ -21,7 +22,6 @@ import logging
 class Serial(Device):
 
     serialline = device_property(
-
         dtype=str,
         default_value="/dev/ttyR0",
         doc="Device name, number or URL. "
@@ -150,22 +150,28 @@ class Serial(Device):
         """
         return self.safe_reconnection(self.serial.write_chars, chararray)
 
+    # Valid VarLongStringArray: argin = ([1,2,3], ["Hello", "TangoTest device"])
     @command(dtype_in=tango.DevVarLongStringArray, dtype_out=tango.DevString)
-    def WriteRead(self, input) -> str:
+    def WriteRead(self, argin) -> str:
         """
-        This method permit to send a request to a device throw the serial line 
+        This method permit to send a request to a device throw the serial line
         and returns the response of the device.
-        The commands write and read don`t return until they have not finished. 
+        The commands write and read don`t return until they have not finished.
         """
-        raise RuntimeError("Uninplemented method")
+        read_mode = argin[0][0]
+        message = argin[1][0]
+        self.safe_reconnection(self.serial.write_string, message)
+        response = self.safe_reconnection(self.serial.read, read_mode)
+
+        return response.decode("UTF-8")
 
     @command(dtype_in=tango.DevLong, dtype_out=tango.DevVarCharArray)
     def DevSerReadNBinData(self, n_chars: int) -> tango.DevVarCharArray:
         """
         Read the specified number of char from the serial line.
-        If the number of caracters is greater than caracters avaiable, this 
+        If the number of caracters is greater than caracters avaiable, this
         command returns all caracters avaiables.
-        If there are no characters to be read returns an empty array. 
+        If there are no characters to be read returns an empty array.
         """
         return self.safe_reconnection(self.serial.read_nchars, n_chars)
 
@@ -174,17 +180,21 @@ class Serial(Device):
         """
         read a string from the serialline device in mode raw (no end
         of string expected, just empty the entire serialline receiving buffer).
-        - If read successfull, read again "nretry" times. 
+        - If read successfull, read again "nretry" times.
         - If no more data found exit on timeout without error.
         """
-        return self.safe_reconnection(self.serial.readretry, nretry)
+        b = self.safe_reconnection(self.serial.readretry, nretry)
+        return b.decode("utf-8")
 
     @command(dtype_in=tango.DevVarLongArray, dtype_out=tango.DevVoid)
-    def DevSerSetParameter(self, parameters: tango.DevVarLongArray) -> None:
+    def DevSerSetParameter(self, params: tango.DevVarLongArray) -> None:
         """
-        Set serial line parameters 
+        Set serial line parameters. Example: [SL_TIMEOUT, 100, SL_PARITY, 1]
         """
-        raise RuntimeError("Uninplemented method")
+        parameters = [(params[i], params[i+1])
+                      for i in range(0, len(params), 2)]
+
+        self.serial.set_parameter(parameters)
 
     @command(dtype_in=tango.DevShort, dtype_out=tango.DevVoid)
     def DevSerSetTimeout(self, timeout: int) -> None:
@@ -194,20 +204,19 @@ class Serial(Device):
         self.serial.set_timeout(timeout)
 
     @command(dtype_in=tango.DevShort, dtype_out=tango.DevVoid)
-    def DevSerSetParity(self, parity: int) -> None:
+    def DevSerSetParity(self, value: int) -> None:
         """
-        Sets the new parity of the serial line. NONE=0 ODD=1 EVEN=3 
+        Sets the new parity of the serial line. NONE=0 ODD=1 EVEN=3
         """
-        conversion = {0: "none", 1: "odd", 3: "even"}
-        self.serial.set_parity(conversion[parity])
+        self.serial.set_parity(Parity(value))
 
     @command(dtype_in=tango.DevShort, dtype_out=tango.DevVoid)
     def DevSerSetCharLength(self, value: int) -> None:
         """
-        Sets the new charlength. 0 = 8 bits, 1 = 7 bits, 2 = 6 bits, 3 = 5 bits 
+        Sets the new charlength. 0 = 8 bits, 1 = 7 bits, 2 = 6 bits, 3 = 5 bits
         """
-        conversion = {0: 8, 1: 7, 2: 6, 3: 5}
-        self.serial.set_charlength(conversion[value])
+
+        self.serial.set_charlength(Charlength(value))
 
     @command(dtype_in=tango.DevShort, dtype_out=tango.DevVoid)
     def DevSerSetStopbit(self, value: int) -> None:
@@ -215,8 +224,7 @@ class Serial(Device):
         Sets the new stop bit. 0 = one, 1 = two stop, 2 = 1.5 stop bit
         # TODO: Check if what the documentation says is true.
         """
-        conversion = {0: 1, 1: 2, 2: 3}
-        self.serial.set_stopbits(conversion[value])
+        self.serial.set_stopbits(Stopbits(value))
 
     @command(dtype_in=tango.DevULong, dtype_out=tango.DevVoid)
     def DevSerSetBaudrate(self, baudrate: int) -> None:
