@@ -202,3 +202,12 @@ class Serial:
         Reads all the remaining available in the serial line.
         """
         return self._com.read_all()
+
+    def readretry(self, times):
+        buf = bytearray()
+        for i in range(times):
+            b = self._com.read_all()
+            buf.extend(b)
+            if b == b"":
+                return buf.decode("utf-8")
+        return buf.decode("utf-8")

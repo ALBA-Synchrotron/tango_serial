@@ -151,7 +151,7 @@ class Serial(Device):
         return self.safe_reconnection(self.serial.write_chars, chararray)
 
     @command(dtype_in=tango.DevVarLongStringArray, dtype_out=tango.DevString)
-    def WriteRead(self, charaarray: bytes) -> str:
+    def WriteRead(self, input) -> str:
         """
         This method permit to send a request to a device throw the serial line 
         and returns the response of the device.
@@ -170,13 +170,14 @@ class Serial(Device):
         raise RuntimeError("Uninplemented method")
 
     @command(dtype_in=tango.DevLong, dtype_out=tango.DevString)
-    def DevSerReadRetry(self, n_chars: int) -> str:
+    def DevSerReadRetry(self, nretry: int) -> str:
         """
         read a string from the serialline device in mode raw (no end
         of string expected, just empty the entire serialline receiving buffer).
-        If read successfull, read again "nretry" times. 
+        - If read successfull, read again "nretry" times. 
+        - If no more data found exit on timeout without error.
         """
-        raise RuntimeError("Uninplemented method")
+        return self.safe_reconnection(self.serial.readretry, nretry)
 
     @command(dtype_in=tango.DevVarLongArray, dtype_out=tango.DevVoid)
     def DevSerSetParameter(self, parameters: tango.DevVarLongArray) -> None:
