@@ -69,15 +69,14 @@ class Serial(Device):
                 return func(arg)
             except SerialException as e:
                 logging.warning("{}: {}".format(func.__name__, e))
-                self.init_device()
+                self.connect()
             except BrokenPipeError as e:
                 logging.warning("{}: {}".format(func.__name__, e))
-                self.init_device()
+                self.connect()
         else:
-            self.init_device()
+            self.connect()
 
-    def init_device(self):
-        super().init_device()
+    def connect(self):
         self.connected = False
         if not self.connected:
             try:
@@ -92,6 +91,10 @@ class Serial(Device):
                 print("\nCheck the properties!")
                 raise tango.CommunicationFailed("The port is down.")
                 sleep(1)
+
+    def init_device(self):
+        super().init_device()
+        self.connect()
 
     @command(dtype_in=str, doc_in="string of characters",
              dtype_out=int, doc_out="number of characters written")
