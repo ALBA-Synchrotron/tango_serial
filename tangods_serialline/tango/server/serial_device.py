@@ -113,7 +113,7 @@ class Serial(Device):
         Read terminated string from the serialline device (end of string
         expected).
         """
-        return self.safe_reconnection(self.serial.read, argin)
+        return self.safe_reconnection(self.serial.read, argin).decode("UTF-8")
 
     @command(dtype_in=int, doc_in="0=input 1=output 2=both")
     def DevSerFlush(self, what: int) -> None:
@@ -142,7 +142,7 @@ class Serial(Device):
         Read a string from the serialline device in mode raw (no end of string
         expected, just empty the entire serialline receiving buffer).
         """
-        return self.safe_reconnection(self.serial.readall, None)
+        return self.safe_reconnection(self.serial.read, 0)
 
     @command(dtype_in=tango.DevVarCharArray, doc_in="string of characters",
              dtype_out=int, doc_out="number of characters written")
@@ -176,7 +176,8 @@ class Serial(Device):
         command returns all caracters avaiables.
         If there are no characters to be read returns an empty array.
         """
-        return self.safe_reconnection(self.serial.read_nchars, n_chars)
+        argin = (n_chars << 8) | 0x01
+        return self.safe_reconnection(self.serial.read, argin)
 
     @command(dtype_in=tango.DevLong, dtype_out=tango.DevString)
     def DevSerReadRetry(self, nretry: int) -> str:
@@ -186,7 +187,8 @@ class Serial(Device):
         - If read successfull, read again "nretry" times.
         - If no more data found exit on timeout without error.
         """
-        b = self.safe_reconnection(self.serial.readretry, nretry)
+        argin = (nretry << 8) | 0x03
+        b = self.safe_reconnection(self.serial.read, argin)
         return b.decode("utf-8")
 
     @command(dtype_in=tango.DevVarLongArray, dtype_out=tango.DevVoid)
@@ -224,7 +226,7 @@ class Serial(Device):
     @command(dtype_in=tango.DevShort, dtype_out=tango.DevVoid)
     def DevSerSetStopbit(self, value: int) -> None:
         """
-        Sets the new stop bit. 0 = one, 1 = two stop, 2 = 1.5 stop bit
+        Sets the new stop bit. 0 = one, 1 = 1.5 stop bit, 2 = two stop bits
         # TODO: Check if what the documentation says is true.
         """
         self.serial.set_stopbits(Stopbits(value))
@@ -239,7 +241,7 @@ class Serial(Device):
     @command(dtype_in=tango.DevUShort, dtype_out=tango.DevVoid)
     def DevSerSetNewline(self, newline: int) -> None:
         """
-        The new ending character in hexa. Default is 0x13 (=CR)
+        The new ending character in hexa. For instance: 0x13 (=CR)
         """
         self.serial.set_newline(newline)
 

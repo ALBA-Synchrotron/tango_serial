@@ -130,9 +130,9 @@ class Serial:
             raise ValueError(
                 "charlength has to be 5, 6, 7 or 8 bits. "
                 "passed {}".format(charlength))
+        logging.info("Charlength set to {}".format(charlength))
 
         parity = parity.lower()
-        assert parity in ['none', 'empty', 'even', 'odd']
         if parity == 'none' or parity == 'empty':
             self._parity = serial.PARITY_NONE
         elif parity == 'even':
@@ -143,6 +143,7 @@ class Serial:
             raise ValueError(
                 "parity has to be 'none', 'empty', 'even', 'odd'. "
                 "passed {}".format(parity))
+        logging.info("Parity set to {}".format(parity))
 
         if stopbits == 1:
             self._stopbits = serial.STOPBITS_ONE
@@ -153,6 +154,9 @@ class Serial:
         else:
             raise ValueError("stopbits has to be 1, 2 or 1.5. "
                              "passed: {}".format(stopbits))
+        logging.info("Stopbits set to {}".format(stopbits))
+
+        self.read_buffer = bytearray()
 
         self._com = serial.serial_for_url(
             self._serialline, timeout=self._timeout, baudrate=self._baudrate,
@@ -244,56 +248,7 @@ class Serial:
         else:
             raise ValueError('Option {} not valid'.format(option))
 
-    def read(self, argin: int) -> bytes:
-        """
-        Read chars from the serial line. SL_RAW = 0, SL_NCHAR=1, SL_LINE=2
-        """
-
-        read_type = argin & 0x000f
-
-        if read_type == 0:
-            return self.readall(None) + b'\0'
-        if read_type == 1:
-            nchar = argin >> 8
-            return self._com.read_until(size=nchar)
-        if read_type == 2:
-            return b"".join(self.__ireadline())
-        if read_type == 3:
-            nretry = argin >> 8
-            return self.readretry(nretry)
-        else:
-            raise ValueError("Error in the read type: {}".format(read_type))
-
-    def __ireadline(self):
-        while True:
-            ch = self._com.read()
-            if ch:
-                yield ch
-                if ch == self._newline:
-                    break
-            else:
-                break
-
-    def readall(self, _) -> bytes:
-        """
-        Reads all the remaining available in the serial line.
-        """
-        return self._com.read_all()
-
-    def readretry(self, times):
-        buf = bytearray()
-        for i in range(times):
-            b = self._com.read_all()
-            buf.extend(b)
-            if b == b"":
-                return buf
-        return buf
-
-    def read_nchars(self, nchars):
-        return self._com.read(size=nchars)
-
     def set_parameter(self, params):
-        print("holaa")
         for type, value in params:
             if type == Parameter.Newline.value:
                 self.set_newline(value)
@@ -307,3 +262,45 @@ class Serial:
                 self.set_stopbits(Stopbits(value))
             if type == Parameter.Timeout.value:
                 self.set_timeout(value)
+
+    def read(self, argin: int) -> bytes:
+        """
+        Read chars from the serial line. SL_RAW = 0, SL_NCHAR=1, SL_LINE=2,
+        SL_RETRY = 3
+        """
+
+        self.read_buffer.extend(self._com.read_all())
+
+        read_type = argin & 0x000f
+
+        if read_type == ReadType.Raw.value:
+            self.read_buffer.extend(b'\0')
+            r = bytes(self.read_buffer)
+            self.read_buffer = bytearray()
+            logging.info("Read Raw: {}".format(r))
+            return r
+        if read_type == ReadType.NChar.value:
+            nchar = argin >> 8
+            r = self.read_buffer[:nchar]
+            self.read_buffer = self.read_buffer[nchar:]
+            logging.info("Read {} NChar: {}".format(nchar, r))
+            return r
+        if read_type == ReadType.Line.value:
+            line, sep, remaining = self.read_buffer.partition(self._newline)
+            self.read_buffer = remaining
+            logging.info("Read Line: {}".format(line))
+            return line
+        if read_type == ReadType.Retry.value:
+            nretry = (argin >> 8) - 1
+            logging.info("Read retry 1/{}: {}"
+                         .format(nretry+1, self.read_buffer))
+            for i in range(nretry):
+                buff = self._com.read_all()
+                logging.info(
+                    "Read retry {}/{}: {}".format(i+2,  nretry+1, buff))
+                self.read_buffer.extend(buff)
+                if buff == b"":
+                    break
+            return bytes(self.read_buffer)
+        else:
+            raise ValueError("Error in the read type: {}".format(read_type))
