@@ -16,5 +16,5 @@ def main():
     import tango.server
     args = ['Serial'] + sys.argv[1:]
     fmt = '%(asctime)s %(threadName)s %(levelname)s %(name)s %(message)s'
-    logging.basicConfig(level=logging.INFO, format=fmt)
+    logging.basicConfig(level=logging.WARNING, format=fmt)
     tango.server.run((Serial,), args=args)
