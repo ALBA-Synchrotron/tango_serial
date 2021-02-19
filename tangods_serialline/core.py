@@ -240,11 +240,13 @@ class Serial:
         """
         if option == 0:
             self._com.reset_input_buffer()
+            self.read_buffer = bytearray()
         elif option == 1:
             self._com.flush()
         elif option == 2:
             self._com.flush()
             self._com.reset_input_buffer()
+            self.read_buffer = bytearray()
         else:
             raise ValueError('Option {} not valid'.format(option))
 
