@@ -9,6 +9,6 @@
 
 __author__ = """Alberto López Sánchez"""
 __email__ = 'ctbeamlines@cells.es'
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 
 # from .core import Serial

@@ -54,6 +54,6 @@ setup(
     packages=find_packages(include=['tangods_serialline', 'tangods_serialline.*']),
 
     url='https://github.com/catunlock/tangods_serialline',
-    version='1.0.0',
+    version='1.0.1',
     zip_safe=False,
 )
