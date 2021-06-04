@@ -96,6 +96,10 @@ class Serial(Device):
         super().init_device()
         self.connect()
 
+    def delete_device(self):
+        if self.connected:
+            self.serial.close()
+
     @command(dtype_in=str, doc_in="string of characters",
              dtype_out=int, doc_out="number of characters written")
     def DevSerWriteString(self, string: str) -> int:

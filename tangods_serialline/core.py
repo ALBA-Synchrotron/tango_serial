@@ -163,6 +163,9 @@ class Serial:
             bytesize=self._charlength, parity=self._parity,
             stopbits=self._stopbits)
 
+    def close(self):
+        self._com.close()
+
     def set_newline(self, value):
         logging.info("Setting newline to: {}".format(value))
         self._newline = chr(value).encode('ascii')
