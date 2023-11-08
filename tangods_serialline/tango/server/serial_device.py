@@ -78,6 +78,13 @@ class Serial(Device):
 
     def connect(self):
         self.connected = False
+        if hasattr(self, 'serial'):
+            # force closing the connection.
+            try:
+                self.serial.close()
+            except Exception:
+                pass
+            del self.serial
         if not self.connected:
             try:
                 self.serial = tangods_serialline.core.Serial(
@@ -248,6 +255,13 @@ class Serial(Device):
         The new ending character in hexa. For instance: 0x13 (=CR)
         """
         self.serial.set_newline(newline)
+
+    @command()
+    def DevSerReconnect(self) -> None:
+        """
+        Force a reconnection to the serial device
+        """
+        self.connect()
 
 
 if __name__ == "__main__":
